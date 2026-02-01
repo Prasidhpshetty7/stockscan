@@ -653,23 +653,34 @@ def print_stock_result(result: Dict[str, Any]):
     if "note" in result:
         note_text = f"\n{YELLOW}⚠ {result['note']}{RESET}\n"
     
+    # Detect currency based on symbol
+    symbol = result['symbol']
+    if '.NS' in symbol or '.BO' in symbol:
+        # Indian stocks (NSE or BSE)
+        currency = '₹'
+        market_name = 'Indian Stock Market'
+    else:
+        # US and other stocks
+        currency = '$'
+        market_name = result['market']
+    
     output = f"""
 {PURPLE}{'─' * 70}{RESET}
 {BOLD}{BRIGHT_PURPLE}STOCKSCAN - STOCK PRICE LOOKUP{RESET}
 {PURPLE}{'─' * 70}{RESET}
 
 {CYAN}ASSET:{RESET}           {result['symbol']}
-{CYAN}MARKET:{RESET}          {result['market']}
+{CYAN}MARKET:{RESET}          {market_name}
 {CYAN}REQUESTED DATE:{RESET}  {result['requested_date']}
 {CYAN}TIMEFRAME:{RESET}       {result['timeframe']}
 
 {DIM}Candle Date:    {result['candle_date']}{RESET}
 {note_text}
 {CYAN}CANDLE DATA:{RESET}
-  Open:   ${result['open']:,.2f}
-  High:   ${result['high']:,.2f}
-  Low:    ${result['low']:,.2f}
-  {GREEN}{BOLD}Close:  ${result['close']:,.2f}  ← Price at that date{RESET}
+  Open:   {currency}{result['open']:,.2f}
+  High:   {currency}{result['high']:,.2f}
+  Low:    {currency}{result['low']:,.2f}
+  {GREEN}{BOLD}Close:  {currency}{result['close']:,.2f}  ← Price at that date{RESET}
   Volume: {result['volume']:,.0f}
 
 {DIM}Note: This uses OHLCV candle logic. The CLOSE price of the daily

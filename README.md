@@ -160,25 +160,137 @@ python stockscan.py crypto ETHUSDT 2026-01-15 10:00 --timeframe 5m
 
 ---
 
-## 🎯 Supported Assets
+## 🎯 Supported Assets & How to Find Symbols
 
-### Stocks
-All US stocks including:
+### 📊 Stocks
+
+**US Stocks:**
+- Format: Just the ticker symbol (e.g., `AAPL`, `TSLA`, `MSFT`)
+- Find symbols: [Yahoo Finance](https://finance.yahoo.com/) - Search for any company
+
+**Indian Stocks:**
+- Format: Symbol + `.NS` (NSE) or `.BO` (BSE)
+- Examples: `RELIANCE.NS`, `TCS.NS`, `INFY.BO`
+- Find symbols: [NSE India](https://www.nseindia.com/) or [BSE India](https://www.bseindia.com/)
+- Prices shown in ₹ (Rupees)
+
+**Other International Stocks:**
+- Most international stocks work with Yahoo Finance format
+- Find symbols: Search on [Yahoo Finance](https://finance.yahoo.com/)
+
+**Popular US Stocks:**
 - AAPL (Apple)
 - TSLA (Tesla)
 - MSFT (Microsoft)
 - GOOGL (Google)
 - AMZN (Amazon)
-- And thousands more...
+- META (Meta/Facebook)
+- NVDA (NVIDIA)
 
-### Crypto
-All Binance spot pairs including:
+**Popular Indian Stocks:**
+- RELIANCE.NS (Reliance Industries)
+- TCS.NS (Tata Consultancy Services)
+- INFY.NS (Infosys)
+- HDFCBANK.NS (HDFC Bank)
+- ICICIBANK.NS (ICICI Bank)
+- SBIN.NS (State Bank of India)
+- ITC.NS (ITC Limited)
+
+### 💰 Crypto
+
+**Format:** Trading pair on Binance (e.g., `BTCUSDT`, `ETHUSDT`)
+- Most crypto symbols end with `USDT` (Tether)
+- Find all symbols: [Binance Markets](https://www.binance.com/en/markets)
+
+**Popular Crypto Pairs:**
 - BTCUSDT (Bitcoin)
 - ETHUSDT (Ethereum)
 - BNBUSDT (Binance Coin)
 - ADAUSDT (Cardano)
 - SOLUSDT (Solana)
-- And 1000+ more...
+- XRPUSDT (Ripple)
+- DOGEUSDT (Dogecoin)
+- MATICUSDT (Polygon)
+
+**How to find crypto symbols:**
+1. Go to [Binance Spot Markets](https://www.binance.com/en/markets)
+2. Search for your coin
+3. Use the trading pair (usually ends with USDT)
+4. Example: Bitcoin → BTC/USDT → Use `BTCUSDT`
+
+---
+
+## 🔍 Symbol Lookup Resources
+
+**Need help finding the right symbol?**
+
+### 📥 Complete Downloadable Lists (ALL Symbols)
+
+| Market | Complete List | Format | Link |
+|--------|--------------|--------|------|
+| **US Stocks (ALL)** | NASDAQ FTP Server | CSV/TXT | ftp://ftp.nasdaqtrader.com/symboldirectory/ |
+| **US Stocks (ALL)** | Symbol List IO | JSON/CSV | https://symbol-list.io/ |
+| **US Stocks (ALL)** | Stock Screener | Web/Export | https://stock-screener.org/stock-list.aspx |
+| **Indian Stocks (NSE)** | NSE Bhavcopy | CSV | https://www.nseindia.com/all-reports |
+| **Indian Stocks (NSE)** | NSE Market Cap List | Excel/CSV | https://www.nseindia.com/regulations/listing-compliance/nse-market-capitalisation-all-companies |
+| **Indian Stocks (BSE)** | BSE Listed Companies | Excel | https://www.bseindia.com/corporates/List_Scrips.aspx |
+| **Crypto (Binance ALL)** | Binance API | JSON | https://api.binance.com/api/v3/exchangeInfo |
+| **Crypto (ALL)** | CoinMarketCap | Web/API | https://coinmarketcap.com/ |
+
+### 🎯 How to Download Complete Lists
+
+**US Stocks (NASDAQ + NYSE + AMEX):**
+1. **Option 1 - NASDAQ FTP (Most Complete):**
+   - Go to: ftp://ftp.nasdaqtrader.com/symboldirectory/
+   - Download: `nasdaqlisted.txt` (NASDAQ stocks)
+   - Download: `otherlisted.txt` (NYSE, AMEX stocks)
+   - Format: Pipe-delimited text file with ALL symbols
+
+2. **Option 2 - Symbol List IO:**
+   - Visit: https://symbol-list.io/
+   - Download JSON or CSV with all US stocks
+   - Updated daily
+
+**Indian Stocks (NSE):**
+1. Visit: https://www.nseindia.com/all-reports
+2. Scroll to "Equity Bhavcopy"
+3. Select date and download CSV
+4. Contains ALL NSE stocks with symbols
+5. Add `.NS` to symbol for StockScan (e.g., `RELIANCE` → `RELIANCE.NS`)
+
+**Indian Stocks (BSE):**
+1. Visit: https://www.bseindia.com/corporates/List_Scrips.aspx
+2. Download Excel file with all BSE companies
+3. Add `.BO` to symbol for StockScan (e.g., `RELIANCE` → `RELIANCE.BO`)
+
+**Crypto (Binance - ALL 1000+ Pairs):**
+1. **Option 1 - Direct API (Easiest):**
+   - Open: https://api.binance.com/api/v3/exchangeInfo
+   - This JSON file contains ALL Binance trading pairs
+   - Look for `"symbol"` field in each entry
+   - Use symbols ending with `USDT` (e.g., `BTCUSDT`, `ETHUSDT`)
+
+2. **Option 2 - Binance Website:**
+   - Visit: https://www.binance.com/en/markets
+   - Browse all pairs
+   - Use the symbol shown (e.g., BTC/USDT → `BTCUSDT`)
+
+### 🔎 Quick Search Tools (No Download Needed)
+
+**For ANY Stock:**
+- Yahoo Finance Lookup: https://finance.yahoo.com/lookup
+- Just search company name, copy the symbol
+
+**For Crypto:**
+- Binance Markets: https://www.binance.com/en/markets
+- Search your coin, use the USDT pair
+
+### 💡 Pro Tips
+
+1. **US Stocks**: Use the symbol exactly as shown (e.g., `AAPL`, `TSLA`)
+2. **Indian Stocks**: Add `.NS` for NSE or `.BO` for BSE (e.g., `RELIANCE.NS`)
+3. **Crypto**: Use Binance spot pairs ending with USDT (e.g., `BTCUSDT`)
+4. **When in doubt**: Search on Yahoo Finance first - that symbol works in StockScan!
 
 ---
 
