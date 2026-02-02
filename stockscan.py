@@ -617,10 +617,37 @@ def list_stock_symbols(limit: int = 50) -> List[str]:
 
 
 def print_crypto_result(result: Dict[str, Any]):
-    """Print crypto price result in CryptoFetch style"""
+    """Print crypto price result in CryptoFetch style with price change calculations"""
     if "error" in result:
         print(f"\n{RED}✗ Error: {result['error']}{RESET}\n")
         return
+    
+    # Calculate price change and percentage
+    open_price = result['open']
+    close_price = result['close']
+    high_price = result['high']
+    low_price = result['low']
+    price_change = close_price - open_price
+    percentage_change = (price_change / open_price) * 100 if open_price != 0 else 0
+    
+    # Check if absolutely no movement (possible holiday/no trading)
+    no_movement = (open_price == close_price == high_price == low_price)
+    
+    # Determine color based on positive/negative change
+    if price_change > 0:
+        change_color = GREEN
+        change_sign = "+"
+    elif price_change < 0:
+        change_color = RED
+        change_sign = ""
+    else:
+        change_color = YELLOW
+        change_sign = ""
+    
+    # Holiday warning if no movement at all
+    holiday_warning = ""
+    if no_movement and result['volume'] == 0:
+        holiday_warning = f"\n{YELLOW}⚠ WARNING: No price movement detected. This day might be a holiday for crypto markets.{RESET}\n{DIM}   Check market reports to verify if trading was active on this date.{RESET}\n"
     
     output = f"""
 {PURPLE}{'─' * 70}{RESET}
@@ -641,8 +668,13 @@ def print_crypto_result(result: Dict[str, Any]):
   {GREEN}{BOLD}Close:  ${result['close']:,.8f}  ← Price at that time{RESET}
   Volume: {result['volume']:,.2f}
 
+{CYAN}PRICE MOVEMENT:{RESET}
+  {change_color}{BOLD}Change:     {change_sign}${abs(price_change):,.8f}{RESET}
+  {change_color}{BOLD}Percentage: {change_sign}{percentage_change:.2f}%{RESET}
+{holiday_warning}
 {DIM}Note: This uses OHLCV candle logic. The CLOSE price of the candle
-      containing your requested time is shown as the price.{RESET}
+      containing your requested time is shown as the price.
+      Price movement shows the change from Open to Close.{RESET}
 
 {PURPLE}{'─' * 70}{RESET}
 """
@@ -650,14 +682,16 @@ def print_crypto_result(result: Dict[str, Any]):
 
 
 def print_stock_result(result: Dict[str, Any]):
-    """Print stock price result in CryptoFetch style"""
+    """Print stock price result in CryptoFetch style with price change calculations"""
     if "error" in result:
         print(f"\n{RED}✗ Error: {result['error']}{RESET}\n")
         return
     
     note_text = ""
+    has_existing_warning = False
     if "note" in result:
         note_text = f"\n{YELLOW}⚠ {result['note']}{RESET}\n"
+        has_existing_warning = True
     
     # Detect currency based on symbol
     symbol = result['symbol']
@@ -665,10 +699,39 @@ def print_stock_result(result: Dict[str, Any]):
         # Indian stocks (NSE or BSE)
         currency = '₹'
         market_name = 'Indian Stock Market'
+        market_type = 'stock market'
     else:
         # US and other stocks
         currency = '$'
         market_name = result['market']
+        market_type = 'stock market'
+    
+    # Calculate price change and percentage
+    open_price = result['open']
+    close_price = result['close']
+    high_price = result['high']
+    low_price = result['low']
+    price_change = close_price - open_price
+    percentage_change = (price_change / open_price) * 100 if open_price != 0 else 0
+    
+    # Check if absolutely no movement (possible holiday/no trading)
+    no_movement = (open_price == close_price == high_price == low_price)
+    
+    # Determine color based on positive/negative change
+    if price_change > 0:
+        change_color = GREEN
+        change_sign = "+"
+    elif price_change < 0:
+        change_color = RED
+        change_sign = ""
+    else:
+        change_color = YELLOW
+        change_sign = ""
+    
+    # Holiday warning ONLY if no existing warning AND no movement at all
+    holiday_warning = ""
+    if no_movement and result['volume'] == 0 and not has_existing_warning:
+        holiday_warning = f"\n{YELLOW}⚠ WARNING: No price movement detected. This day might be a holiday for {market_type}.{RESET}\n{DIM}   Check market reports to verify if trading was active on this date.{RESET}\n"
     
     output = f"""
 {PURPLE}{'─' * 70}{RESET}
@@ -689,8 +752,13 @@ def print_stock_result(result: Dict[str, Any]):
   {GREEN}{BOLD}Close:  {currency}{result['close']:,.2f}  ← Price at that date{RESET}
   Volume: {result['volume']:,.0f}
 
+{CYAN}PRICE MOVEMENT:{RESET}
+  {change_color}{BOLD}Change:     {change_sign}{currency}{abs(price_change):,.2f}{RESET}
+  {change_color}{BOLD}Percentage: {change_sign}{percentage_change:.2f}%{RESET}
+{holiday_warning}
 {DIM}Note: This uses OHLCV candle logic. The CLOSE price of the daily
-      candle for your requested date is shown as the price.{RESET}
+      candle for your requested date is shown as the price.
+      Price movement shows the change from Open to Close.{RESET}
 
 {PURPLE}{'─' * 70}{RESET}
 """
