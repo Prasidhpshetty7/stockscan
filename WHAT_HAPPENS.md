@@ -50,7 +50,7 @@ How it works:
   • Fetches OHLCV (Open, High, Low, Close, Volume) candle data
   • Finds the candle that CONTAINS your requested time
   • Returns the CLOSE price as the price at that time
-  • This is the same method used by CryptoFetch and other tools
+  • This is the standard method used by professional trading tools
 
 Data Sources:
   • Crypto: Binance (1000+ coins, NO API KEY NEEDED)

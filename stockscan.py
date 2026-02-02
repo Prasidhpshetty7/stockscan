@@ -75,7 +75,7 @@ def print_description():
   • Fetches OHLCV (Open, High, Low, Close, Volume) candle data
   • Finds the candle that CONTAINS your requested time
   • Returns the CLOSE price as the price at that time
-  • This is the same method used by CryptoFetch and other tools
+  • This is the standard method used by professional trading tools
 
 {CYAN}Data Sources:{RESET}
   • Crypto: Binance (1000+ coins, NO API KEY NEEDED)
@@ -134,7 +134,7 @@ def print_usage():
     print(usage)
 
 
-def get_crypto_price(symbol: str, date_str: str, time_str: Optional[str] = None, timeframe: str = "1m") -> Dict[str, Any]:
+def get_crypto_price(symbol: str, date_str: str, time_str: Optional[str] = None, timeframe: str = "5m") -> Dict[str, Any]:
     """
     Get crypto price from Binance at specific time using OHLCV candle logic.
     Finds the candle that CONTAINS the requested time and returns its CLOSE price.

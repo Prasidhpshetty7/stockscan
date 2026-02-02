@@ -148,12 +148,12 @@ Note: This uses OHLCV candle logic. The CLOSE price of the daily
 
 ## 🎓 How It Works
 
-StockScan uses **OHLCV candle logic** (the same method as CryptoFetch):
+StockScan uses **OHLCV candle logic** (the industry-standard method):
 
 1. You provide a symbol and date/time
 2. StockScan fetches the candle data that CONTAINS that time
 3. Returns the CLOSE price of that candle
-4. This is the standard method for historical price lookups
+4. This is the same method used by professional trading platforms
 
 **Data Sources:**
 - **Crypto**: Binance Public API (no key needed) - 10 timeframes available
