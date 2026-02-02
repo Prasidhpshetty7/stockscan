@@ -128,7 +128,7 @@ Note: This uses OHLCV candle logic. The CLOSE price of the daily
 ✅ **1000+ Cryptocurrencies** - All Binance spot pairs  
 ✅ **All US Stocks** - NYSE, NASDAQ, AMEX  
 ✅ **Indian Stocks Support** - NSE & BSE with ₹ currency  
-✅ **Multiple Timeframes** - 1m, 5m, 15m, 1h, 1d for crypto  
+✅ **Multiple Timeframes** - 5m, 15m, 30m, 1h, 4h, 12h, 1d, 3d, 1w, 1M for crypto  
 ✅ **Historical Data** - Check any past date  
 ✅ **Price Movement Calculator** - Shows change and percentage gain/loss  
 ✅ **Smart Holiday Detection** - Warns about potential market holidays  
@@ -156,8 +156,8 @@ StockScan uses **OHLCV candle logic** (the same method as CryptoFetch):
 4. This is the standard method for historical price lookups
 
 **Data Sources:**
-- **Crypto**: Binance Public API (no key needed)
-- **Stocks**: Yahoo Finance API (no key needed)
+- **Crypto**: Binance Public API (no key needed) - 10 timeframes available
+- **Stocks**: Yahoo Finance API (no key needed) - Daily data
 
 ---
 
@@ -329,11 +329,16 @@ python stockscan.py crypto ETHUSDT 2026-01-15 10:00 --timeframe 5m
 
 ## ⏱️ Timeframes (Crypto Only)
 
-- `1m` - 1 minute candles
 - `5m` - 5 minute candles
 - `15m` - 15 minute candles
+- `30m` - 30 minute candles
 - `1h` - 1 hour candles
+- `4h` - 4 hour candles
+- `12h` - 12 hour candles
 - `1d` - Daily candles
+- `3d` - 3 day candles
+- `1w` - Weekly candles
+- `1M` - Monthly candles
 
 *Note: Stocks only support daily data (free tier limitation)*
 

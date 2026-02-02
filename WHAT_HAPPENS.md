@@ -54,7 +54,7 @@ How it works:
 
 Data Sources:
   • Crypto: Binance (1000+ coins, NO API KEY NEEDED)
-    - Supports: 1m, 5m, 15m, 1h, 1d timeframes
+    - Supports: 5m, 15m, 30m, 1h, 4h, 12h, 1d, 3d, 1w, 1M timeframes
   • Stocks: Yahoo Finance (all US stocks, NO API KEY NEEDED)
     - Supports: Daily data
     - Works out of the box!
@@ -164,7 +164,7 @@ Examples:
 
 Date format: YYYY-MM-DD
 Time format: HH:MM (optional for daily timeframe)
-Timeframes: 1m, 5m, 15m, 1h, 1d (default: 1m if not specified)
+Timeframes: 5m, 15m, 30m, 1h, 4h, 12h, 1d, 3d, 1w, 1M
 Type 'back' to return to market selection
 
 Enter crypto lookup: _
