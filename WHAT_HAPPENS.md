@@ -129,8 +129,13 @@ CANDLE DATA:
   Close:  $258.21  ← Price at that date    👈 THIS IS THE ANSWER!
   Volume: 39,388,600
 
+PRICE MOVEMENT:
+  Change:     -$2.44                       👈 Price went down
+  Percentage: -0.94%                       👈 Lost 0.94%
+
 Note: This uses OHLCV candle logic. The CLOSE price of the daily
       candle for your requested date is shown as the price.
+      Price movement shows the change from Open to Close.
 
 ──────────────────────────────────────────────────────────────────────
 
@@ -190,8 +195,13 @@ CANDLE DATA:
   Close:  $97,040.75000000  ← Price at that time    👈 THIS IS THE ANSWER!
   Volume: 1,029.78
 
+PRICE MOVEMENT:
+  Change:     +$397.74000000               👈 Price went up
+  Percentage: +0.41%                       👈 Gained 0.41%
+
 Note: This uses OHLCV candle logic. The CLOSE price of the candle
       containing your requested time is shown as the price.
+      Price movement shows the change from Open to Close.
 
 ──────────────────────────────────────────────────────────────────────
 

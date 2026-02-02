@@ -88,11 +88,37 @@ CANDLE DATA:
   Close:  $258.21  ← Price at that date
   Volume: 39,388,600
 
+PRICE MOVEMENT:
+  Change:     -$2.44
+  Percentage: -0.94%
+
 Note: This uses OHLCV candle logic. The CLOSE price of the daily
       candle for your requested date is shown as the price.
+      Price movement shows the change from Open to Close.
 
 ──────────────────────────────────────────────────────────────────────
 ```
+
+### 📊 Understanding the Output
+
+**CANDLE DATA** - Shows the OHLCV (Open, High, Low, Close, Volume) for that time period:
+- **Open**: Price when the period started
+- **High**: Highest price during the period
+- **Low**: Lowest price during the period
+- **Close**: Price when the period ended (this is the main price shown)
+- **Volume**: How much was traded during the period
+
+**PRICE MOVEMENT** - Shows how the price changed during that period:
+- **Change**: Absolute price difference from Open to Close (in $ or ₹)
+  - Green with + sign = Price went up
+  - Red with - sign = Price went down
+  - Yellow = No change
+- **Percentage**: Percentage change from Open to Close
+  - Shows how much the price moved as a percentage
+
+**Example**: If a stock opened at $100 and closed at $105:
+- Change: +$5.00 (gained $5)
+- Percentage: +5.00% (gained 5%)
 
 ---
 
@@ -101,9 +127,12 @@ Note: This uses OHLCV candle logic. The CLOSE price of the daily
 ✅ **No API Keys Required** - Works immediately after download  
 ✅ **1000+ Cryptocurrencies** - All Binance spot pairs  
 ✅ **All US Stocks** - NYSE, NASDAQ, AMEX  
+✅ **Indian Stocks Support** - NSE & BSE with ₹ currency  
 ✅ **Multiple Timeframes** - 1m, 5m, 15m, 1h, 1d for crypto  
 ✅ **Historical Data** - Check any past date  
-✅ **Beautiful UI** - Colorful terminal output  
+✅ **Price Movement Calculator** - Shows change and percentage gain/loss  
+✅ **Smart Holiday Detection** - Warns about potential market holidays  
+✅ **Beautiful UI** - Colorful terminal output with color-coded gains/losses  
 ✅ **Error Handling** - Clear warnings and helpful messages  
 ✅ **Interactive & CLI Modes** - Use whichever you prefer  
 
@@ -137,25 +166,29 @@ StockScan uses **OHLCV candle logic** (the same method as CryptoFetch):
 ### Check Apple Stock
 ```bash
 python stockscan.py stock AAPL 2026-01-15
-# Output: $258.21
+# Output: $258.21 (Close price)
+# Change: -$2.44 (-0.94%)
 ```
 
 ### Check Bitcoin Price
 ```bash
 python stockscan.py crypto BTCUSDT 2026-01-15 14:30 --timeframe 1h
-# Output: $97,040.75
+# Output: $97,040.75 (Close price)
+# Change: +$397.74 (+0.41%)
 ```
 
 ### Check Tesla Stock
 ```bash
 python stockscan.py stock TSLA 2024-12-20
-# Output: $421.06
+# Output: $421.06 (Close price)
+# Change: -$2.56 (-0.58%)
 ```
 
 ### Check Ethereum Price
 ```bash
 python stockscan.py crypto ETHUSDT 2026-01-15 10:00 --timeframe 5m
-# Output: $3,302.39
+# Output: $3,302.39 (Close price)
+# Change: +$2.23 (+0.07%)
 ```
 
 ---

@@ -121,9 +121,33 @@ CANDLE DATA:
   Low:    $257.05
   Close:  $258.21  ← Price at that date    👈 THIS IS THE PRICE!
   Volume: 39,388,600
+
+PRICE MOVEMENT:
+  Change:     -$2.44                       👈 Price went down by $2.44
+  Percentage: -0.94%                       👈 Lost 0.94%
 ```
 
-**The CLOSE price is what you're looking for!**
+### What Each Part Means:
+
+**CANDLE DATA:**
+- **Open** = Price when the day/period started
+- **High** = Highest price during that day/period
+- **Low** = Lowest price during that day/period
+- **Close** = Price when the day/period ended ← **This is the main price!**
+- **Volume** = How many shares/coins were traded
+
+**PRICE MOVEMENT:**
+- **Change** = How much the price moved (Close - Open)
+  - Green with + = Price went up 📈
+  - Red with - = Price went down 📉
+  - Yellow = No change
+- **Percentage** = Percentage change from Open to Close
+  - Shows the gain or loss as a percentage
+
+**Example:**
+- If a stock opened at $100 and closed at $105:
+  - Change: +$5.00 (gained $5)
+  - Percentage: +5.00% (gained 5%)
 
 ---
 
