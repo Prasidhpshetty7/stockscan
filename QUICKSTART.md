@@ -57,7 +57,7 @@ or
 py stockscan.py
 ```
 
-**What happens:**
+## Step 5: You See This Beautiful Banner
 1. You'll see a big purple STOCKSCAN banner
 2. It asks: "Which market do you want to check?"
    - Press `1` for Stocks
@@ -76,6 +76,11 @@ py stockscan.py
 
 ### Option B: Command Line Mode (For Quick Lookups)
 
+Navigate to the stockscan folder first:
+```bash
+cd stockscan
+```
+
 **For Stocks:**
 ```bash
 python stockscan.py stock AAPL 2026-01-15
@@ -89,6 +94,8 @@ python stockscan.py crypto BTCUSDT 2026-01-15 14:30 --timeframe 1h
 python stockscan.py crypto ETHUSDT 2026-01-15 10:00 --timeframe 5m
 python stockscan.py crypto BNBUSDT 2026-01-10 --timeframe 1d
 ```
+
+**Windows users:** Replace `python` with `py` if needed
 
 **Timeframe options for crypto:**
 - `5m` = 5 minutes
@@ -161,20 +168,22 @@ PRICE MOVEMENT:
 ### Example 1: Check Apple Stock Price
 
 1. Open terminal
-2. Run: `python stockscan.py`
-3. Press `1` (for Stocks)
-4. Type: `AAPL 2026-01-15`
-5. Press Enter
-6. See the price: $258.21
+2. Navigate to folder: `cd stockscan`
+3. Run: `python stockscan.py` (or `py stockscan.py` on Windows)
+4. Press `1` (for Stocks)
+5. Type: `AAPL 2026-01-15`
+6. Press Enter
+7. See the price: $258.21
 
 ### Example 2: Check Bitcoin Price
 
 1. Open terminal
-2. Run: `python stockscan.py`
-3. Press `2` (for Crypto)
-4. Type: `BTCUSDT 2026-01-15 14:30 1h`
-5. Press Enter
-6. See the price: $97,040.75
+2. Navigate to folder: `cd stockscan`
+3. Run: `python stockscan.py` (or `py stockscan.py` on Windows)
+4. Press `2` (for Crypto)
+5. Type: `BTCUSDT 2026-01-15 14:30 1h`
+6. Press Enter
+7. See the price: $97,040.75
 
 ---
 
@@ -202,9 +211,16 @@ A: The tool will show you a warning and ask you to try again with the correct fo
 
 ## Need Help?
 
-Run this command to see all options:
+Run this command (from inside the stockscan folder):
 ```bash
+cd stockscan
 python stockscan.py help
+```
+
+Or on Windows:
+```bash
+cd stockscan
+py stockscan.py help
 ```
 
 ---
@@ -217,7 +233,8 @@ You're ready to use StockScan! 🎉
 1. Download `stockscan.py`
 2. Install Python (if needed)
 3. Run: `pip install requests`
-4. Run: `python stockscan.py`
-5. Follow the prompts!
+4. Navigate: `cd stockscan`
+5. Run: `python stockscan.py` (or `py stockscan.py`)
+6. Follow the prompts!
 
 No complicated setup, no API keys, just download and run! 🚀

@@ -28,8 +28,26 @@ pip install requests
 ```
 
 ### 3. Run It!
+
+**Option A - Navigate to the folder first (Recommended):**
 ```bash
+cd stockscan
 python stockscan.py
+```
+
+**Option B - Run from parent folder:**
+```bash
+# Windows
+python stockscan\stockscan.py
+
+# Mac/Linux
+python stockscan/stockscan.py
+```
+
+**Note for Windows users:** If `python` doesn't work, try `py` instead:
+```bash
+cd stockscan
+py stockscan.py
 ```
 
 That's it! No API keys, no configuration, no hassle.
@@ -40,9 +58,19 @@ That's it! No API keys, no configuration, no hassle.
 
 ### Interactive Mode (Easiest)
 
-Just run without arguments:
+First, navigate to the stockscan folder:
+```bash
+cd stockscan
+```
+
+Then run without arguments:
 ```bash
 python stockscan.py
+```
+
+Or on Windows, you can use:
+```bash
+py stockscan.py
 ```
 
 You'll see:
@@ -52,6 +80,11 @@ You'll see:
 4. 💵 Get the price instantly!
 
 ### Command Line Mode (Fastest)
+
+Navigate to the stockscan folder first:
+```bash
+cd stockscan
+```
 
 **Stocks:**
 ```bash
@@ -64,6 +97,8 @@ python stockscan.py stock TSLA 2024-12-20
 python stockscan.py crypto BTCUSDT 2026-01-15 14:30 --timeframe 1h
 python stockscan.py crypto ETHUSDT 2026-01-15 10:00 --timeframe 5m
 ```
+
+**Windows users:** Replace `python` with `py` if needed
 
 ---
 
@@ -163,6 +198,11 @@ StockScan uses **OHLCV candle logic** (the industry-standard method):
 
 ## 💡 Examples
 
+Navigate to the stockscan folder first:
+```bash
+cd stockscan
+```
+
 ### Check Apple Stock
 ```bash
 python stockscan.py stock AAPL 2026-01-15
@@ -190,6 +230,8 @@ python stockscan.py crypto ETHUSDT 2026-01-15 10:00 --timeframe 5m
 # Output: $3,302.39 (Close price)
 # Change: +$2.23 (+0.07%)
 ```
+
+**Windows users:** Replace `python` with `py` if the above doesn't work
 
 ---
 

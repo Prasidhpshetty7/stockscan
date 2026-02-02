@@ -11,16 +11,25 @@
 
 ## Step 2: Run StockScan
 
-Type this command:
+**Option A - Navigate to folder first (Recommended):**
 ```bash
+cd stockscan
 python stockscan.py
 ```
 
-or
+**Option B - Run from parent folder:**
 
+Windows:
 ```bash
-py stockscan.py
+python stockscan\stockscan.py
 ```
+
+Mac/Linux:
+```bash
+python stockscan/stockscan.py
+```
+
+**Note:** If `python` doesn't work, try `py` instead (common on Windows)
 
 ---
 
@@ -250,11 +259,15 @@ Then it asks you again!
 ## Complete Flow Diagram
 
 ```
-1. Run: python stockscan.py
+1. Open terminal
    ↓
-2. See STOCKSCAN banner + info
+2. Navigate: cd stockscan
    ↓
-3. Choose market: [1] Stocks  [2] Crypto  [Q] Quit
+3. Run: python stockscan.py (or py stockscan.py on Windows)
+   ↓
+4. See STOCKSCAN banner + info
+   ↓
+5. Choose market: [1] Stocks  [2] Crypto  [Q] Quit
    ↓
    ├─→ Press 1 → Stock mode
    │   ↓
@@ -281,9 +294,10 @@ Then it asks you again!
 
 **That's literally it!**
 
-1. Run: `python stockscan.py`
-2. Press `1` or `2`
-3. Type your lookup
-4. Get the price!
+1. Navigate: `cd stockscan`
+2. Run: `python stockscan.py` (or `py stockscan.py`)
+3. Press `1` or `2`
+4. Type your lookup
+5. Get the price!
 
 No complicated commands, no configuration files, no API keys. Just run and use! 🚀
