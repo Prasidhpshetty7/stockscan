@@ -341,11 +341,27 @@ That's it!
 
 MIT License - Free to use and modify
 
+Copyright © 2026 [Prasidh P Shetty](https://prasidhshetty.in)
+
+See [LICENSE](LICENSE) file for details.
+
+---
+
+## 👨‍💻 Author
+
+**Prasidh P Shetty**
+
+- 🌐 Portfolio: [prasidhshetty.in](https://prasidhshetty.in)
+- 💻 GitHub: [@prasidhpshetty7](https://github.com/prasidhpshetty7)
+- 📧 For queries and support, visit my portfolio
+
 ---
 
 ## 🤝 Contributing
 
 Found a bug? Have a suggestion? Feel free to open an issue or submit a pull request!
+
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ---
 
@@ -359,11 +375,11 @@ If you find StockScan useful, give it a star! ⭐
 
 Having issues? Check out:
 1. [QUICKSTART.md](QUICKSTART.md) - Beginner's guide
-2. [DEMO.md](DEMO.md) - Detailed examples
-3. Run `python stockscan.py help` - See all commands
+2. [WHAT_HAPPENS.md](WHAT_HAPPENS.md) - Visual walkthrough
+3. Open an issue on GitHub
 
 ---
 
-**Made with ❤️ for traders, investors, and crypto enthusiasts**
+**Made with ❤️ by [Prasidh P Shetty](https://prasidhshetty.in)**
 
 🚀 Download, run, and start checking prices in seconds!

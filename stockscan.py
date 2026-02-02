@@ -2,6 +2,12 @@
 """
 StockScan - Terminal-based Market Price Lookup Tool
 Get crypto and stock prices at any point in time
+
+Copyright (c) 2026 Prasidh P Shetty
+GitHub: https://github.com/prasidhpshetty7
+Portfolio: https://prasidhshetty.in
+
+Licensed under the MIT License
 """
 
 import sys
