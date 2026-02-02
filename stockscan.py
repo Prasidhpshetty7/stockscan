@@ -874,7 +874,7 @@ def interactive_mode():
                 
                 # Check if timeframe was provided
                 timeframe = None
-                valid_timeframes = ['1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '8h', '12h', '1d', '3d', '1w', '1M']
+                valid_timeframes = ['5m', '15m', '30m', '1h', '4h', '12h', '1d', '3d', '1w', '1M']
                 if len(parts) > 2:
                     # Last part might be timeframe
                     last_part = parts[-1]
@@ -889,48 +889,38 @@ def interactive_mode():
                     print(f"\n{CYAN}{'─' * 50}{RESET}")
                     print(f"{BOLD}{BRIGHT_PURPLE}SELECT TIMEFRAME{RESET}\n")
                     print(f"{CYAN}Available timeframes:{RESET}")
-                    print(f"  {GREEN}[1]{RESET}  1m   - 1 minute")
-                    print(f"  {GREEN}[2]{RESET}  3m   - 3 minutes")
-                    print(f"  {GREEN}[3]{RESET}  5m   - 5 minutes")
-                    print(f"  {GREEN}[4]{RESET}  15m  - 15 minutes")
-                    print(f"  {GREEN}[5]{RESET}  30m  - 30 minutes")
-                    print(f"  {GREEN}[6]{RESET}  1h   - 1 hour")
-                    print(f"  {GREEN}[7]{RESET}  2h   - 2 hours")
-                    print(f"  {GREEN}[8]{RESET}  4h   - 4 hours")
-                    print(f"  {GREEN}[9]{RESET}  6h   - 6 hours")
-                    print(f"  {GREEN}[10]{RESET} 8h   - 8 hours")
-                    print(f"  {GREEN}[11]{RESET} 12h  - 12 hours")
-                    print(f"  {GREEN}[12]{RESET} 1d   - 1 day")
-                    print(f"  {GREEN}[13]{RESET} 3d   - 3 days")
-                    print(f"  {GREEN}[14]{RESET} 1w   - 1 week")
-                    print(f"  {GREEN}[15]{RESET} 1M   - 1 month\n")
+                    print(f"  {GREEN}[1]{RESET}  5m   - 5 minutes")
+                    print(f"  {GREEN}[2]{RESET}  15m  - 15 minutes")
+                    print(f"  {GREEN}[3]{RESET}  30m  - 30 minutes")
+                    print(f"  {GREEN}[4]{RESET}  1h   - 1 hour")
+                    print(f"  {GREEN}[5]{RESET}  4h   - 4 hours")
+                    print(f"  {GREEN}[6]{RESET}  12h  - 12 hours")
+                    print(f"  {GREEN}[7]{RESET}  1d   - 1 day")
+                    print(f"  {GREEN}[8]{RESET}  3d   - 3 days")
+                    print(f"  {GREEN}[9]{RESET}  1w   - 1 week")
+                    print(f"  {GREEN}[10]{RESET} 1M   - 1 month\n")
                     
                     timeframe_map = {
-                        '1': '1m',
-                        '2': '3m',
-                        '3': '5m',
-                        '4': '15m',
-                        '5': '30m',
-                        '6': '1h',
-                        '7': '2h',
-                        '8': '4h',
-                        '9': '6h',
-                        '10': '8h',
-                        '11': '12h',
-                        '12': '1d',
-                        '13': '3d',
-                        '14': '1w',
-                        '15': '1M'
+                        '1': '5m',
+                        '2': '15m',
+                        '3': '30m',
+                        '4': '1h',
+                        '5': '4h',
+                        '6': '12h',
+                        '7': '1d',
+                        '8': '3d',
+                        '9': '1w',
+                        '10': '1M'
                     }
                     
                     while True:
-                        tf_choice = input(f"{CYAN}Select timeframe (1-15):{RESET} ").strip()
+                        tf_choice = input(f"{CYAN}Select timeframe (1-10):{RESET} ").strip()
                         
                         if tf_choice in timeframe_map:
                             timeframe = timeframe_map[tf_choice]
                             break
                         else:
-                            print(f"{RED}⚠ Invalid choice! Please enter a number between 1 and 15{RESET}")
+                            print(f"{RED}⚠ Invalid choice! Please enter a number between 1 and 10{RESET}")
                 
                 result = get_crypto_price(symbol.upper(), date, time, timeframe)
                 print_crypto_result(result)
