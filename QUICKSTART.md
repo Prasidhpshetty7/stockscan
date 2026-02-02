@@ -83,9 +83,9 @@ cd stockscan
 
 **For Stocks:**
 ```bash
-python stockscan.py stock AAPL 2026-01-15
-python stockscan.py stock TSLA 2024-12-20
-python stockscan.py stock MSFT 2025-06-10
+python stockscan.py stock AAPL 2026-01-15 --timeframe 1d
+python stockscan.py stock TSLA 2024-12-20 --timeframe 1wk
+python stockscan.py stock RELIANCE.NS 2024-01-15 --timeframe 1mo
 ```
 
 **For Crypto:**
@@ -108,6 +108,11 @@ python stockscan.py crypto BNBUSDT 2026-01-10 --timeframe 1d
 - `3d` = 3 days
 - `1w` = 1 week
 - `1M` = 1 month
+
+**Timeframe options for stocks:**
+- `1d` = Daily (full history)
+- `1wk` = Weekly (full history)
+- `1mo` = Monthly (full history)
 
 ---
 

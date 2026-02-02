@@ -79,9 +79,9 @@ def print_description():
 
 {CYAN}Data Sources:{RESET}
   • Crypto: Binance (1000+ coins, NO API KEY NEEDED)
-    - Supports: 1m, 5m, 15m, 1h, 1d timeframes
-  • Stocks: Yahoo Finance (all US stocks, NO API KEY NEEDED)
-    - Supports: Daily data
+    - Supports: 5m, 15m, 30m, 1h, 4h, 12h, 1d, 3d, 1w, 1M timeframes
+  • Stocks: Yahoo Finance (all US & Indian stocks, NO API KEY NEEDED)
+    - Supports: 1d (daily), 1wk (weekly), 1mo (monthly)
     - Works out of the box!
 """
     print(desc)
@@ -92,16 +92,14 @@ def print_usage():
     usage = f"""
 {CYAN}Usage Examples:{RESET}
 
-  {GREEN}# Get crypto price at specific time (1-minute candle){RESET}
-  python stockscan.py crypto BTCUSDT 2024-01-15 14:30
-
-  {GREEN}# Get crypto price with custom timeframe{RESET}
+  {GREEN}# Get crypto price at specific time{RESET}
   python stockscan.py crypto BTCUSDT 2024-01-15 14:30 --timeframe 1h
   python stockscan.py crypto ETHUSDT 2024-01-15 --timeframe 1d
 
-  {GREEN}# Get stock price (daily close){RESET}
-  python stockscan.py stock AAPL 2024-01-15
-  python stockscan.py stock TSLA 2024-01-10
+  {GREEN}# Get stock price with timeframe{RESET}
+  python stockscan.py stock AAPL 2024-01-15 --timeframe 1d
+  python stockscan.py stock TSLA 2024-01-10 --timeframe 1wk
+  python stockscan.py stock RELIANCE.NS 2024-01-15 --timeframe 1mo
 
   {GREEN}# List all available crypto symbols{RESET}
   python stockscan.py list crypto
@@ -112,11 +110,12 @@ def print_usage():
   {GREEN}# Show help{RESET}
   python stockscan.py help
 
-{CYAN}Supported Timeframes (Crypto only):{RESET}
-  1m, 5m, 15m, 1h, 1d
+{CYAN}Supported Timeframes:{RESET}
+  {BOLD}Crypto:{RESET} 5m, 15m, 30m, 1h, 4h, 12h, 1d, 3d, 1w, 1M
+  {BOLD}Stocks:{RESET} 1d (daily), 1wk (weekly), 1mo (monthly)
 
 {CYAN}How it works:{RESET}
-  • Uses OHLCV candle logic (like CryptoFetch)
+  • Uses OHLCV candle logic (industry-standard method)
   • Finds the candle that CONTAINS your requested time
   • Returns the CLOSE price of that candle
   • This is the standard method for historical price lookups
@@ -244,56 +243,36 @@ def get_crypto_price(symbol: str, date_str: str, time_str: Optional[str] = None,
         return {"error": f"Unexpected error: {str(e)}"}
 
 
-def get_stock_price(symbol: str, date_str: str, time_str: Optional[str] = None) -> Dict[str, Any]:
+def get_stock_price(symbol: str, date_str: str, time_str: Optional[str] = None, timeframe: str = "1d") -> Dict[str, Any]:
     """
-    Get stock price at specific date using DAILY OHLCV candle logic.
-    Tries multiple data sources in order:
-    1. Yahoo Finance (free, no API key needed)
-    2. Alpha Vantage (if API key set)
-    3. Finnhub (if API key set)
-    
-    Note: Stocks use DAILY data on free tier. Intraday time is ignored.
+    Get stock price at specific date using OHLCV candle logic.
+    Supports multiple timeframes with full historical data.
     
     Args:
-        symbol: Stock symbol (e.g., AAPL)
+        symbol: Stock symbol (e.g., AAPL, RELIANCE.NS)
         date_str: Date in YYYY-MM-DD format
-        time_str: Ignored for stocks (daily data only)
+        time_str: Ignored for stocks (not used)
+        timeframe: Candle interval - 1d, 1wk, 1mo (default: 1d)
     
     Returns:
         Dict with price data or error
     """
-    # Try Yahoo Finance first (no API key needed!)
-    result = get_stock_price_yahoo(symbol, date_str, time_str)
+    # Try Yahoo Finance (supports all timeframes, no API key needed!)
+    result = get_stock_price_yahoo(symbol, date_str, time_str, timeframe)
     if "error" not in result:
         return result
     
-    # Try Alpha Vantage if available
-    if ALPHAVANTAGE_API_KEY and ALPHAVANTAGE_API_KEY != "demo":
-        result = get_stock_price_alphavantage(symbol, date_str, time_str)
-        if "error" not in result:
-            return result
-    
-    # Fall back to Finnhub if available
-    if FINNHUB_API_KEY:
-        result = get_stock_price_finnhub(symbol, date_str, time_str)
-        if "error" not in result:
-            return result
-    
-    # If all failed, return helpful error
+    # If Yahoo Finance failed, return error
     return {
-        "error": "Unable to fetch stock data. The free Yahoo Finance API may be unavailable.\n" +
-                 "Optional: Get a free API key for better reliability:\n" +
-                 "  • Alpha Vantage: https://www.alphavantage.co/support/#api-key\n" +
-                 "    Set it: $env:ALPHAVANTAGE_API_KEY='your_key'\n" +
-                 "  • Finnhub: https://finnhub.io/register\n" +
-                 "    Set it: $env:FINNHUB_API_KEY='your_key'"
+        "error": "Unable to fetch stock data from Yahoo Finance.\n" +
+                 "Please check the symbol and try again."
     }
 
 
-def get_stock_price_yahoo(symbol: str, date_str: str, time_str: Optional[str] = None) -> Dict[str, Any]:
+def get_stock_price_yahoo(symbol: str, date_str: str, time_str: Optional[str] = None, timeframe: str = "1d") -> Dict[str, Any]:
     """
     Get stock price from Yahoo Finance (no API key needed!)
-    Uses the public query API endpoint
+    Supports multiple timeframes: 1d (daily), 1wk (weekly), 1mo (monthly)
     """
     try:
         # Parse date
@@ -303,10 +282,29 @@ def get_stock_price_yahoo(symbol: str, date_str: str, time_str: Optional[str] = 
         if dt > datetime.now():
             return {"error": "Future price data does not exist."}
         
+        # Map timeframe to Yahoo Finance interval
+        interval_map = {
+            "1d": "1d",
+            "1wk": "1wk",
+            "1mo": "1mo"
+        }
+        
+        interval = interval_map.get(timeframe, "1d")
+        
+        # Calculate time window based on timeframe
+        if timeframe == "1d":
+            days_before = 7
+            days_after = 1
+        elif timeframe == "1wk":
+            days_before = 30  # ~4 weeks before
+            days_after = 7
+        else:  # 1mo
+            days_before = 60  # ~2 months before
+            days_after = 30
+        
         # Convert to unix timestamps
-        # Get data from 7 days before to 1 day after to ensure we have the date
-        start_dt = dt - timedelta(days=7)
-        end_dt = dt + timedelta(days=1)
+        start_dt = dt - timedelta(days=days_before)
+        end_dt = dt + timedelta(days=days_after)
         
         period1 = int(start_dt.timestamp())
         period2 = int(end_dt.timestamp())
@@ -316,7 +314,7 @@ def get_stock_price_yahoo(symbol: str, date_str: str, time_str: Optional[str] = 
         params = {
             "period1": period1,
             "period2": period2,
-            "interval": "1d",
+            "interval": interval,
             "events": "history"
         }
         
@@ -357,14 +355,23 @@ def get_stock_price_yahoo(symbol: str, date_str: str, time_str: Optional[str] = 
             ts_date = datetime.fromtimestamp(ts).date()
             target_date = dt.date()
             
-            if ts_date == target_date:
-                closest_idx = i
-                break
-            
-            diff = abs(ts - target_ts)
-            if diff < min_diff and ts <= target_ts + 86400:  # Within 1 day after
-                min_diff = diff
-                closest_idx = i
+            # For weekly/monthly, check if target falls within the period
+            if timeframe in ["1wk", "1mo"]:
+                # Check if target date is close to this candle
+                diff = abs(ts - target_ts)
+                if diff < min_diff:
+                    min_diff = diff
+                    closest_idx = i
+            else:
+                # Daily - exact match preferred
+                if ts_date == target_date:
+                    closest_idx = i
+                    break
+                
+                diff = abs(ts - target_ts)
+                if diff < min_diff and ts <= target_ts + 86400:  # Within 1 day after
+                    min_diff = diff
+                    closest_idx = i
         
         # Extract OHLCV data
         candle_ts = timestamps[closest_idx]
@@ -380,12 +387,19 @@ def get_stock_price_yahoo(symbol: str, date_str: str, time_str: Optional[str] = 
         if None in [open_price, high_price, low_price, close_price, volume]:
             return {"error": f"Incomplete data for {date_str}. Market may have been closed."}
         
+        # Map timeframe to display name
+        timeframe_display = {
+            "1d": "Daily",
+            "1wk": "Weekly",
+            "1mo": "Monthly"
+        }
+        
         result = {
             "symbol": symbol,
             "market": "Stocks (Yahoo Finance)",
             "requested_date": date_str,
             "candle_date": candle_date,
-            "timeframe": "Daily",
+            "timeframe": timeframe_display.get(timeframe, "Daily"),
             "open": float(open_price),
             "high": float(high_price),
             "low": float(low_price),
@@ -393,11 +407,12 @@ def get_stock_price_yahoo(symbol: str, date_str: str, time_str: Optional[str] = 
             "volume": float(volume)
         }
         
-        # Add note if time was provided or date was adjusted
-        if time_str:
-            result["note"] = "Stocks use daily data. Time parameter ignored."
-        elif candle_date != date_str:
-            result["note"] = f"Market was closed on {date_str}. Showing closest trading day."
+        # Add note if date was adjusted
+        if candle_date != date_str:
+            if timeframe == "1d":
+                result["note"] = f"Market was closed on {date_str}. Showing closest trading day."
+            else:
+                result["note"] = f"Showing {timeframe_display[timeframe].lower()} candle containing {date_str}."
         
         return result
     
@@ -803,11 +818,11 @@ def interactive_mode():
             # Stock mode
             print(f"\n{CYAN}{'─' * 70}{RESET}")
             print(f"{BOLD}{BRIGHT_PURPLE}STOCK PRICE LOOKUP{RESET}\n")
-            print(f"{CYAN}Syntax:{RESET} {GREEN}<SYMBOL> <DATE>{RESET}")
+            print(f"{CYAN}Syntax:{RESET} {GREEN}<SYMBOL> <DATE> [TIMEFRAME]{RESET}")
             print(f"{CYAN}Examples:{RESET}")
-            print(f"  AAPL 2026-01-15  {DIM}(Apple){RESET}")
-            print(f"  TSLA 2024-12-20  {DIM}(Tesla){RESET}")
-            print(f"  MSFT 2025-06-10  {DIM}(Microsoft){RESET}\n")
+            print(f"  AAPL 2026-01-15     {DIM}(Will ask for timeframe){RESET}")
+            print(f"  AAPL 2026-01-15 1d  {DIM}(Direct with timeframe){RESET}")
+            print(f"  TSLA 2024-12-20 1wk {DIM}(Weekly candle){RESET}\n")
             print(f"{DIM}Date format: YYYY-MM-DD{RESET}")
             print(f"{DIM}Type 'back' to return to market selection{RESET}\n")
             
@@ -823,13 +838,45 @@ def interactive_mode():
                 
                 parts = user_input.split()
                 
-                if len(parts) != 2:
-                    print(f"{RED}⚠ Invalid syntax! Use: <SYMBOL> <DATE>{RESET}")
+                if len(parts) < 2:
+                    print(f"{RED}⚠ Invalid syntax! Use: <SYMBOL> <DATE> [TIMEFRAME]{RESET}")
                     print(f"{YELLOW}Example: AAPL 2026-01-15{RESET}")
                     continue
                 
-                symbol, date = parts
-                result = get_stock_price(symbol.upper(), date)
+                symbol = parts[0]
+                date = parts[1]
+                
+                # Check if timeframe was provided
+                timeframe = None
+                valid_timeframes = ['1d', '1wk', '1mo']
+                if len(parts) > 2 and parts[2] in valid_timeframes:
+                    timeframe = parts[2]
+                
+                # If no timeframe provided, ask user to select
+                if timeframe is None:
+                    print(f"\n{CYAN}{'─' * 50}{RESET}")
+                    print(f"{BOLD}{BRIGHT_PURPLE}SELECT TIMEFRAME{RESET}\n")
+                    print(f"{CYAN}Available timeframes:{RESET}")
+                    print(f"  {GREEN}[1]{RESET}  1d   - Daily")
+                    print(f"  {GREEN}[2]{RESET}  1wk  - Weekly")
+                    print(f"  {GREEN}[3]{RESET}  1mo  - Monthly\n")
+                    
+                    timeframe_map = {
+                        '1': '1d',
+                        '2': '1wk',
+                        '3': '1mo'
+                    }
+                    
+                    while True:
+                        tf_choice = input(f"{CYAN}Select timeframe (1-3):{RESET} ").strip()
+                        
+                        if tf_choice in timeframe_map:
+                            timeframe = timeframe_map[tf_choice]
+                            break
+                        else:
+                            print(f"{RED}⚠ Invalid choice! Please enter a number between 1 and 3{RESET}")
+                
+                result = get_stock_price(symbol.upper(), date, None, timeframe)
                 print_stock_result(result)
                 
                 # Ask if they want to check another
@@ -951,14 +998,18 @@ def main():
     crypto_parser.add_argument('date', help='Date (YYYY-MM-DD)')
     crypto_parser.add_argument('time', nargs='?', help='Time (HH:MM, optional)')
     crypto_parser.add_argument('--timeframe', '-t', 
-                              choices=['1m', '5m', '15m', '1h', '1d'],
-                              default='1m',
-                              help='Candle timeframe (default: 1m)')
+                              choices=['5m', '15m', '30m', '1h', '4h', '12h', '1d', '3d', '1w', '1M'],
+                              default='5m',
+                              help='Candle timeframe (default: 5m)')
     
     # Stock command
     stock_parser = subparsers.add_parser('stock', help='Get stock price')
     stock_parser.add_argument('symbol', help='Stock symbol (e.g., AAPL)')
     stock_parser.add_argument('date', help='Date (YYYY-MM-DD)')
+    stock_parser.add_argument('--timeframe', '-t',
+                              choices=['1d', '1wk', '1mo'],
+                              default='1d',
+                              help='Candle timeframe (default: 1d)')
     
     # List command
     list_parser = subparsers.add_parser('list', help='List symbols')
@@ -976,12 +1027,13 @@ def main():
             print_usage()
         
         elif args.command == 'crypto':
-            timeframe = getattr(args, 'timeframe', '1m')
+            timeframe = getattr(args, 'timeframe', '5m')
             result = get_crypto_price(args.symbol, args.date, args.time, timeframe)
             print_crypto_result(result)
         
         elif args.command == 'stock':
-            result = get_stock_price(args.symbol, args.date)
+            timeframe = getattr(args, 'timeframe', '1d')
+            result = get_stock_price(args.symbol, args.date, None, timeframe)
             print_stock_result(result)
         
         elif args.command == 'list':

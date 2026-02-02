@@ -64,8 +64,8 @@ How it works:
 Data Sources:
   • Crypto: Binance (1000+ coins, NO API KEY NEEDED)
     - Supports: 5m, 15m, 30m, 1h, 4h, 12h, 1d, 3d, 1w, 1M timeframes
-  • Stocks: Yahoo Finance (all US stocks, NO API KEY NEEDED)
-    - Supports: Daily data
+  • Stocks: Yahoo Finance (all US & Indian stocks, NO API KEY NEEDED)
+    - Supports: 1d (daily), 1wk (weekly), 1mo (monthly)
     - Works out of the box!
 ```
 
@@ -117,7 +117,21 @@ Enter stock lookup: _
 
 Type: `AAPL 2026-01-15` and press Enter
 
-You'll see:
+You'll see a timeframe selector:
+
+```
+──────────────────────────────────────────────────
+SELECT TIMEFRAME
+
+Available timeframes:
+  [1]  1d   - Daily
+  [2]  1wk  - Weekly
+  [3]  1mo  - Monthly
+
+Select timeframe (1-3): _
+```
+
+Choose `1` for daily, then you'll see:
 
 ```
 ──────────────────────────────────────────────────────────────────────

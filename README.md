@@ -88,8 +88,9 @@ cd stockscan
 
 **Stocks:**
 ```bash
-python stockscan.py stock AAPL 2026-01-15
-python stockscan.py stock TSLA 2024-12-20
+python stockscan.py stock AAPL 2026-01-15 --timeframe 1d
+python stockscan.py stock TSLA 2024-12-20 --timeframe 1wk
+python stockscan.py stock RELIANCE.NS 2024-01-15 --timeframe 1mo
 ```
 
 **Crypto:**
@@ -161,10 +162,9 @@ Note: This uses OHLCV candle logic. The CLOSE price of the daily
 
 ✅ **No API Keys Required** - Works immediately after download  
 ✅ **1000+ Cryptocurrencies** - All Binance spot pairs  
-✅ **All US Stocks** - NYSE, NASDAQ, AMEX  
-✅ **Indian Stocks Support** - NSE & BSE with ₹ currency  
-✅ **Multiple Timeframes** - 5m, 15m, 30m, 1h, 4h, 12h, 1d, 3d, 1w, 1M for crypto  
-✅ **Historical Data** - Check any past date  
+✅ **All US & Indian Stocks** - NYSE, NASDAQ, AMEX, NSE, BSE  
+✅ **Multiple Timeframes** - Crypto: 5m, 15m, 30m, 1h, 4h, 12h, 1d, 3d, 1w, 1M | Stocks: 1d, 1wk, 1mo  
+✅ **Historical Data** - Check any past date with full history  
 ✅ **Price Movement Calculator** - Shows change and percentage gain/loss  
 ✅ **Smart Holiday Detection** - Warns about potential market holidays  
 ✅ **Beautiful UI** - Colorful terminal output with color-coded gains/losses  
@@ -203,11 +203,25 @@ Navigate to the stockscan folder first:
 cd stockscan
 ```
 
-### Check Apple Stock
+### Check Apple Stock (Daily)
 ```bash
-python stockscan.py stock AAPL 2026-01-15
+python stockscan.py stock AAPL 2026-01-15 --timeframe 1d
 # Output: $258.21 (Close price)
 # Change: -$2.44 (-0.94%)
+```
+
+### Check Apple Stock (Weekly)
+```bash
+python stockscan.py stock AAPL 2024-01-15 --timeframe 1wk
+# Output: $191.56 (Close price)
+# Change: +$9.40 (+5.16%)
+```
+
+### Check Indian Stock (Monthly)
+```bash
+python stockscan.py stock RELIANCE.NS 2024-01-15 --timeframe 1mo
+# Output: ₹1,426.62 (Close price)
+# Change: +₹136.35 (+10.57%)
 ```
 
 ### Check Bitcoin Price
@@ -215,13 +229,6 @@ python stockscan.py stock AAPL 2026-01-15
 python stockscan.py crypto BTCUSDT 2026-01-15 14:30 --timeframe 1h
 # Output: $97,040.75 (Close price)
 # Change: +$397.74 (+0.41%)
-```
-
-### Check Tesla Stock
-```bash
-python stockscan.py stock TSLA 2024-12-20
-# Output: $421.06 (Close price)
-# Change: -$2.56 (-0.58%)
 ```
 
 ### Check Ethereum Price
@@ -369,8 +376,9 @@ python stockscan.py crypto ETHUSDT 2026-01-15 10:00 --timeframe 5m
 
 ---
 
-## ⏱️ Timeframes (Crypto Only)
+## ⏱️ Timeframes
 
+### Crypto (Binance)
 - `5m` - 5 minute candles
 - `15m` - 15 minute candles
 - `30m` - 30 minute candles
@@ -382,7 +390,12 @@ python stockscan.py crypto ETHUSDT 2026-01-15 10:00 --timeframe 5m
 - `1w` - Weekly candles
 - `1M` - Monthly candles
 
-*Note: Stocks only support daily data (free tier limitation)*
+### Stocks (Yahoo Finance)
+- `1d` - Daily candles (full history)
+- `1wk` - Weekly candles (full history)
+- `1mo` - Monthly candles (full history)
+
+*All timeframes support full historical data - no limitations!*
 
 ---
 
