@@ -105,6 +105,40 @@ python stockscan.py crypto ETHUSDT 2026-01-15 10:00 --timeframe 5m
 
 ## 📸 Example Output
 
+### Stock Weekly Lookup
+```
+──────────────────────────────────────────────────────────────────────
+STOCKSCAN - STOCK PRICE LOOKUP
+──────────────────────────────────────────────────────────────────────
+
+ASSET:           AAPL
+MARKET:          Stocks (Yahoo Finance)
+REQUESTED DATE:  2024-01-15
+TIMEFRAME:       Weekly
+
+Candle Period:  2024-01-15 → 2024-01-21
+ℹ Note: This period has only 4 trading day(s) out of the full weekly timeframe.
+   3 day(s) excluded due to weekends/holidays. Check dates beyond this period for continued data.
+
+CANDLE DATA:
+  Open:   $182.16
+  High:   $191.95
+  Low:    $180.30
+  Close:  $191.56  ← Price at that date
+  Volume: 259,829,200
+
+PRICE MOVEMENT:
+  Change:     +$9.40
+  Percentage: +5.16%
+
+Note: This uses OHLCV candle logic. The CLOSE price of the candle
+      for your requested period is shown as the price.
+      Price movement shows the change from Open to Close.
+
+──────────────────────────────────────────────────────────────────────
+```
+
+### Stock Daily Lookup
 ```
 ──────────────────────────────────────────────────────────────────────
 STOCKSCAN - STOCK PRICE LOOKUP
@@ -152,6 +186,12 @@ Note: This uses OHLCV candle logic. The CLOSE price of the daily
 - **Percentage**: Percentage change from Open to Close
   - Shows how much the price moved as a percentage
 
+**WEEKLY/MONTHLY PERIODS** - For weekly (1wk) and monthly (1mo) timeframes:
+- **Candle Period**: Shows the full 7-day or 30-day calendar period
+- **Trading Days Note**: Indicates how many days had actual trading activity
+- **Non-Trading Days**: Weekends and holidays are excluded from the data
+- **Example**: A week starting Monday with a holiday shows "4 trading days out of 7"
+
 **Example**: If a stock opened at $100 and closed at $105:
 - Change: +$5.00 (gained $5)
 - Percentage: +5.00% (gained 5%)
@@ -165,8 +205,9 @@ Note: This uses OHLCV candle logic. The CLOSE price of the daily
 ✅ **All US & Indian Stocks** - NYSE, NASDAQ, AMEX, NSE, BSE  
 ✅ **Multiple Timeframes** - Crypto: 16 timeframes (1s to 1M) | Stocks: 3 timeframes (1d, 1wk, 1mo)  
 ✅ **Historical Data** - Check any past date with full history  
+✅ **Weekly/Monthly Periods** - Shows full calendar periods with trading day counts  
 ✅ **Price Movement Calculator** - Shows change and percentage gain/loss  
-✅ **Smart Holiday Detection** - Warns about potential market holidays  
+✅ **Smart Holiday Detection** - Warns about weekends and holidays in the period  
 ✅ **Beautiful UI** - Colorful terminal output with color-coded gains/losses  
 ✅ **Error Handling** - Clear warnings and helpful messages  
 ✅ **Interactive & CLI Modes** - Use whichever you prefer  
@@ -176,7 +217,7 @@ Note: This uses OHLCV candle logic. The CLOSE price of the daily
 ## 📚 Documentation
 
 - **[QUICKSTART.md](QUICKSTART.md)** - Step-by-step guide for beginners
-- **[DEMO.md](DEMO.md)** - Detailed examples and screenshots
+- **[WHAT_HAPPENS.md](WHAT_HAPPENS.md)** - Visual walkthrough
 - Run `python stockscan.py help` - See all commands
 
 ---
@@ -448,7 +489,9 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-**THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.**
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+**For full license details, see the [LICENSE](LICENSE) file.**
 
 ---
 

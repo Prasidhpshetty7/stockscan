@@ -126,7 +126,9 @@ python stockscan.py crypto BNBUSDT 2026-01-10 --timeframe 1d
 
 ## Step 5: Understanding the Output
 
-When you look up a price, you'll see:
+### Daily Lookup Output
+
+When you look up a daily price, you'll see:
 
 ```
 ──────────────────────────────────────────────────────────────────────
@@ -152,6 +154,36 @@ PRICE MOVEMENT:
   Percentage: -0.94%                       👈 Lost 0.94%
 ```
 
+### Weekly/Monthly Lookup Output
+
+When you look up a weekly or monthly period, you'll see:
+
+```
+──────────────────────────────────────────────────────────────────────
+STOCKSCAN - STOCK PRICE LOOKUP
+──────────────────────────────────────────────────────────────────────
+
+ASSET:           AAPL
+MARKET:          Stocks (Yahoo Finance)
+REQUESTED DATE:  2024-01-15
+TIMEFRAME:       Weekly
+
+Candle Period:  2024-01-15 → 2024-01-21    👈 Full 7-day period
+ℹ Note: This period has only 4 trading day(s) out of the full weekly timeframe.
+   3 day(s) excluded due to weekends/holidays. Check dates beyond this period for continued data.
+
+CANDLE DATA:
+  Open:   $182.16
+  High:   $191.95
+  Low:    $180.30
+  Close:  $191.56  ← Price at end of period
+  Volume: 259,829,200
+
+PRICE MOVEMENT:
+  Change:     +$9.40                       👈 Price went up by $9.40
+  Percentage: +5.16%                       👈 Gained 5.16%
+```
+
 ### What Each Part Means:
 
 **CANDLE DATA:**
@@ -169,6 +201,12 @@ PRICE MOVEMENT:
 - **Percentage** = Percentage change from Open to Close
   - Shows the gain or loss as a percentage
 
+**WEEKLY/MONTHLY PERIODS:**
+- **Candle Period** = Shows the full 7-day (weekly) or 30-day (monthly) calendar period
+- **Trading Days Note** = Tells you how many days had actual market activity
+- **Non-Trading Days** = Weekends and holidays don't have trading data
+- **Example**: A week with 1 holiday + 2 weekend days = only 4 trading days
+
 **Example:**
 - If a stock opened at $100 and closed at $105:
   - Change: +$5.00 (gained $5)
@@ -178,17 +216,27 @@ PRICE MOVEMENT:
 
 ## Complete Example Walkthrough
 
-### Example 1: Check Apple Stock Price
+### Example 1: Check Apple Stock Price (Daily)
 
 1. Open terminal
 2. Navigate to folder: `cd stockscan`
 3. Run: `python stockscan.py` (or `py stockscan.py` on Windows)
 4. Press `1` (for Stocks)
 5. Type: `AAPL 2026-01-15`
-6. Press Enter
+6. Select timeframe: `1` (Daily)
 7. See the price: $258.21
 
-### Example 2: Check Bitcoin Price
+### Example 2: Check Apple Stock Price (Weekly)
+
+1. Open terminal
+2. Navigate to folder: `cd stockscan`
+3. Run: `python stockscan.py` (or `py stockscan.py` on Windows)
+4. Press `1` (for Stocks)
+5. Type: `AAPL 2024-01-15`
+6. Select timeframe: `2` (Weekly)
+7. See the period: Jan 15 → Jan 21 with 4 trading days
+
+### Example 3: Check Bitcoin Price
 
 1. Open terminal
 2. Navigate to folder: `cd stockscan`

@@ -165,6 +165,58 @@ Note: This uses OHLCV candle logic. The CLOSE price of the daily
 Press Enter to check another stock, or type 'back' to change market
 ```
 
+**Or choose `2` for weekly:**
+
+```
+──────────────────────────────────────────────────────────────────────
+STOCKSCAN - STOCK PRICE LOOKUP
+──────────────────────────────────────────────────────────────────────
+
+ASSET:           AAPL
+MARKET:          Stocks (Yahoo Finance)
+REQUESTED DATE:  2024-01-15
+TIMEFRAME:       Weekly
+
+Candle Period:  2024-01-15 → 2024-01-21    👈 Full 7-day period
+ℹ Note: This period has only 4 trading day(s) out of the full weekly timeframe.
+   3 day(s) excluded due to weekends/holidays. Check dates beyond this period for continued data.
+
+CANDLE DATA:
+  Open:   $182.16
+  High:   $191.95
+  Low:    $180.30
+  Close:  $191.56  ← Price at end of period
+  Volume: 259,829,200
+
+PRICE MOVEMENT:
+  Change:     +$9.40                       👈 Price went up
+  Percentage: +5.16%                       👈 Gained 5.16%
+
+Note: This uses OHLCV candle logic. The CLOSE price of the candle
+      for your requested period is shown as the price.
+      Price movement shows the change from Open to Close.
+
+──────────────────────────────────────────────────────────────────────
+
+Press Enter to check another stock, or type 'back' to change market
+```
+  Low:    $257.05
+  Close:  $258.21  ← Price at that date    👈 THIS IS THE ANSWER!
+  Volume: 39,388,600
+
+PRICE MOVEMENT:
+  Change:     -$2.44                       👈 Price went down
+  Percentage: -0.94%                       👈 Lost 0.94%
+
+Note: This uses OHLCV candle logic. The CLOSE price of the daily
+      candle for your requested date is shown as the price.
+      Price movement shows the change from Open to Close.
+
+──────────────────────────────────────────────────────────────────────
+
+Press Enter to check another stock, or type 'back' to change market
+```
+
 **What to do next:**
 - Press Enter → Check another stock
 - Type `back` → Go back to market selection (choose crypto or quit)
