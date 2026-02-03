@@ -887,7 +887,10 @@ def print_stock_result(result: Dict[str, Any]):
         # Add holiday/weekend notification if there are missing days
         if result.get('missing_days') and result['missing_days'] > 0:
             missing_days = result['missing_days']
-            candle_date_display += f"\n{YELLOW}ℹ Note: {missing_days} non-trading day(s) in this period (weekends/holidays).{RESET}\n{DIM}   Check data after these {missing_days} day(s) for complete market activity.{RESET}"
+            timeframe_name = result['timeframe'].lower()  # "weekly" or "monthly"
+            trading_days = 7 - missing_days if result['timeframe'] == 'Weekly' else 30 - missing_days
+            
+            candle_date_display += f"\n{YELLOW}ℹ Note: This period has only {trading_days} trading day(s) out of the full {timeframe_name} timeframe.{RESET}\n{DIM}   {missing_days} day(s) excluded due to weekends/holidays. Check dates beyond this period for continued data.{RESET}"
     else:
         # Daily - show single date
         candle_date_display = f"{DIM}Candle Date:    {result['candle_start_date']}{RESET}"
