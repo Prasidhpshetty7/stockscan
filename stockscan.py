@@ -455,24 +455,18 @@ def get_stock_price_yahoo(symbol: str, date_str: str, time_str: Optional[str] = 
             close_price = closes[-1]  # Last close
             volume = sum(volumes)  # Total volume
             
-            candle_start_date = datetime.fromtimestamp(timestamps[filtered_indices[0]]).strftime("%Y-%m-%d")
-            candle_end_date = datetime.fromtimestamp(timestamps[filtered_indices[-1]]).strftime("%Y-%m-%d")
-            
-            # Calculate missing days (holidays/weekends)
-            # Compare requested period vs actual trading days
+            # Show the FULL requested period (not just trading days)
+            # This shows the complete 7-day or 30-day period
+            candle_start_date = dt.strftime("%Y-%m-%d")
             if timeframe == "1wk":
+                candle_end_date = (dt + timedelta(days=6)).strftime("%Y-%m-%d")
                 expected_period_days = 7
             else:  # 1mo
+                candle_end_date = (dt + timedelta(days=29)).strftime("%Y-%m-%d")
                 expected_period_days = 30
             
-            # Count actual calendar days covered by trading data
-            start_date_obj = datetime.fromtimestamp(timestamps[filtered_indices[0]]).date()
-            end_date_obj = datetime.fromtimestamp(timestamps[filtered_indices[-1]]).date()
-            actual_calendar_days = (end_date_obj - start_date_obj).days + 1
+            # Calculate missing days (holidays/weekends)
             trading_days = len(filtered_indices)
-            
-            # Missing days = (expected period - actual calendar days) + (actual calendar days - trading days)
-            # Simplified: missing days = expected period - trading days
             missing_days = expected_period_days - trading_days
             
             # Store missing days info for display
