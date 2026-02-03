@@ -97,17 +97,25 @@ python stockscan.py crypto BNBUSDT 2026-01-10 --timeframe 1d
 
 **Windows users:** Replace `python` with `py` if needed
 
-**Timeframe options for crypto:**
+**Timeframe options for crypto (16 total):**
+- `1s` = 1 second
+- `1m` = 1 minute
+- `3m` = 3 minutes
 - `5m` = 5 minutes
 - `15m` = 15 minutes
 - `30m` = 30 minutes
 - `1h` = 1 hour
+- `2h` = 2 hours
 - `4h` = 4 hours
+- `6h` = 6 hours
+- `8h` = 8 hours
 - `12h` = 12 hours
 - `1d` = 1 day
 - `3d` = 3 days
 - `1w` = 1 week
 - `1M` = 1 month
+
+*All 16 Binance timeframes supported!*
 
 **Timeframe options for stocks:**
 - `1d` = Daily (full history)

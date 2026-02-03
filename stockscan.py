@@ -79,7 +79,7 @@ def print_description():
 
 {CYAN}Data Sources:{RESET}
   • Crypto: Binance (1000+ coins, NO API KEY NEEDED)
-    - Supports: 5m, 15m, 30m, 1h, 4h, 12h, 1d, 3d, 1w, 1M timeframes
+    - Supports: 1s, 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M
   • Stocks: Yahoo Finance (all US & Indian stocks, NO API KEY NEEDED)
     - Supports: 1d (daily), 1wk (weekly), 1mo (monthly)
     - Works out of the box!
@@ -111,7 +111,7 @@ def print_usage():
   python stockscan.py help
 
 {CYAN}Supported Timeframes:{RESET}
-  {BOLD}Crypto:{RESET} 5m, 15m, 30m, 1h, 4h, 12h, 1d, 3d, 1w, 1M
+  {BOLD}Crypto:{RESET} 1s, 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M
   {BOLD}Stocks:{RESET} 1d (daily), 1wk (weekly), 1mo (monthly)
 
 {CYAN}How it works:{RESET}
@@ -164,6 +164,7 @@ def get_crypto_price(symbol: str, date_str: str, time_str: Optional[str] = None,
         
         # Calculate time window based on timeframe
         timeframe_ms = {
+            "1s": 1000,
             "1m": 60000,
             "3m": 180000,
             "5m": 300000,
@@ -184,42 +185,70 @@ def get_crypto_price(symbol: str, date_str: str, time_str: Optional[str] = None,
         interval = timeframe if timeframe in timeframe_ms else "1m"
         window = timeframe_ms[interval]
         
-        # Fetch kline data around the target time
-        url = f"{BINANCE_BASE}/klines"
-        params = {
-            "symbol": symbol,
-            "interval": interval,
-            "startTime": target_timestamp_ms - (window * 2),  # Fetch candles before
-            "endTime": target_timestamp_ms + (window * 2),    # and after target time
-            "limit": 10
-        }
-        
-        response = requests.get(url, params=params, timeout=10)
-        response.raise_for_status()
-        data = response.json()
-        
-        if not data:
-            return {"error": "No data available for this time. Asset may not have existed yet."}
-        
-        # Find the candle that CONTAINS the target time
-        # Candle structure: [open_time, open, high, low, close, volume, close_time, ...]
-        target_candle = None
-        for candle in data:
-            candle_open_time = candle[0]
-            candle_close_time = candle[6]
+        # For weekly/monthly timeframes, start from exact date and go forward
+        if interval in ["1w", "1M"]:
+            # Start from the exact requested date
+            start_time = target_timestamp_ms
+            end_time = target_timestamp_ms + window
             
-            # Check if target time falls within this candle
-            if candle_open_time <= target_timestamp_ms < candle_close_time:
-                target_candle = candle
-                break
-        
-        # If no exact match, use the closest candle
-        if not target_candle:
-            target_candle = min(data, key=lambda c: abs(c[0] - target_timestamp_ms))
-        
-        # Extract candle data
-        candle_open_time = datetime.fromtimestamp(target_candle[0] / 1000)
-        candle_close_time = datetime.fromtimestamp(target_candle[6] / 1000)
+            url = f"{BINANCE_BASE}/klines"
+            params = {
+                "symbol": symbol,
+                "interval": interval,
+                "startTime": start_time,
+                "endTime": end_time,
+                "limit": 1
+            }
+            
+            response = requests.get(url, params=params, timeout=10)
+            response.raise_for_status()
+            data = response.json()
+            
+            if not data:
+                return {"error": "No data available for this time. Asset may not have existed yet."}
+            
+            target_candle = data[0]
+            
+            # Calculate actual period
+            candle_open_time = dt  # Start from requested date
+            candle_close_time = dt + timedelta(milliseconds=window)
+        else:
+            # For other timeframes, use the old logic (find candle containing the time)
+            url = f"{BINANCE_BASE}/klines"
+            params = {
+                "symbol": symbol,
+                "interval": interval,
+                "startTime": target_timestamp_ms - (window * 2),  # Fetch candles before
+                "endTime": target_timestamp_ms + (window * 2),    # and after target time
+                "limit": 10
+            }
+            
+            response = requests.get(url, params=params, timeout=10)
+            response.raise_for_status()
+            data = response.json()
+            
+            if not data:
+                return {"error": "No data available for this time. Asset may not have existed yet."}
+            
+            # Find the candle that CONTAINS the target time
+            # Candle structure: [open_time, open, high, low, close, volume, close_time, ...]
+            target_candle = None
+            for candle in data:
+                candle_open_time_ms = candle[0]
+                candle_close_time_ms = candle[6]
+                
+                # Check if target time falls within this candle
+                if candle_open_time_ms <= target_timestamp_ms < candle_close_time_ms:
+                    target_candle = candle
+                    break
+            
+            # If no exact match, use the closest candle
+            if not target_candle:
+                target_candle = min(data, key=lambda c: abs(c[0] - target_timestamp_ms))
+            
+            # Extract candle data
+            candle_open_time = datetime.fromtimestamp(target_candle[0] / 1000)
+            candle_close_time = datetime.fromtimestamp(target_candle[6] / 1000)
         
         return {
             "symbol": symbol,
@@ -291,30 +320,40 @@ def get_stock_price_yahoo(symbol: str, date_str: str, time_str: Optional[str] = 
         
         interval = interval_map.get(timeframe, "1d")
         
-        # Calculate time window based on timeframe
-        if timeframe == "1d":
+        # For weekly/monthly timeframes, fetch DAILY data and aggregate
+        if timeframe in ["1wk", "1mo"]:
+            # Fetch daily data for the period
+            start_dt = dt
+            
+            # Calculate end date based on timeframe
+            if timeframe == "1wk":
+                end_dt = dt + timedelta(days=7)
+            else:  # 1mo
+                end_dt = dt + timedelta(days=30)
+            
+            period1 = int(start_dt.timestamp())
+            period2 = int(end_dt.timestamp())
+            
+            # Fetch DAILY data (not weekly/monthly)
+            fetch_interval = "1d"
+        else:
+            # Daily - use old logic
             days_before = 7
             days_after = 1
-        elif timeframe == "1wk":
-            days_before = 30  # ~4 weeks before
-            days_after = 7
-        else:  # 1mo
-            days_before = 60  # ~2 months before
-            days_after = 30
-        
-        # Convert to unix timestamps
-        start_dt = dt - timedelta(days=days_before)
-        end_dt = dt + timedelta(days=days_after)
-        
-        period1 = int(start_dt.timestamp())
-        period2 = int(end_dt.timestamp())
+            
+            start_dt = dt - timedelta(days=days_before)
+            end_dt = dt + timedelta(days=days_after)
+            
+            period1 = int(start_dt.timestamp())
+            period2 = int(end_dt.timestamp())
+            fetch_interval = interval
         
         # Yahoo Finance API endpoint
         url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
         params = {
             "period1": period1,
             "period2": period2,
-            "interval": interval,
+            "interval": fetch_interval,
             "events": "history"
         }
         
@@ -345,24 +384,42 @@ def get_stock_price_yahoo(symbol: str, date_str: str, time_str: Optional[str] = 
         if not timestamps or not indicators:
             return {"error": "No price data available"}
         
-        # Find the closest date to our target
-        target_ts = int(dt.timestamp())
-        closest_idx = 0
-        min_diff = float('inf')
-        
-        for i, ts in enumerate(timestamps):
-            # Convert timestamp to date and compare
-            ts_date = datetime.fromtimestamp(ts).date()
-            target_date = dt.date()
+        # Find the data for our target period
+        if timeframe in ["1wk", "1mo"]:
+            # For weekly/monthly, aggregate daily data into one candle
+            if not timestamps or len(timestamps) == 0:
+                return {"error": "No price data available for this period"}
             
-            # For weekly/monthly, check if target falls within the period
-            if timeframe in ["1wk", "1mo"]:
-                # Check if target date is close to this candle
-                diff = abs(ts - target_ts)
-                if diff < min_diff:
-                    min_diff = diff
-                    closest_idx = i
-            else:
+            # Aggregate all daily candles into one
+            opens = [indicators["open"][i] for i in range(len(timestamps)) if indicators["open"][i] is not None]
+            highs = [indicators["high"][i] for i in range(len(timestamps)) if indicators["high"][i] is not None]
+            lows = [indicators["low"][i] for i in range(len(timestamps)) if indicators["low"][i] is not None]
+            closes = [indicators["close"][i] for i in range(len(timestamps)) if indicators["close"][i] is not None]
+            volumes = [indicators["volume"][i] for i in range(len(timestamps)) if indicators["volume"][i] is not None]
+            
+            if not opens or not closes:
+                return {"error": "Incomplete data for this period"}
+            
+            # Create aggregated candle
+            open_price = opens[0]  # First open
+            high_price = max(highs)  # Highest high
+            low_price = min(lows)  # Lowest low
+            close_price = closes[-1]  # Last close
+            volume = sum(volumes)  # Total volume
+            
+            candle_start_date = datetime.fromtimestamp(timestamps[0]).strftime("%Y-%m-%d")
+            candle_end_date = datetime.fromtimestamp(timestamps[-1]).strftime("%Y-%m-%d")
+        else:
+            # Daily - find the closest date to our target
+            target_ts = int(dt.timestamp())
+            closest_idx = 0
+            min_diff = float('inf')
+            
+            for i, ts in enumerate(timestamps):
+                # Convert timestamp to date and compare
+                ts_date = datetime.fromtimestamp(ts).date()
+                target_date = dt.date()
+                
                 # Daily - exact match preferred
                 if ts_date == target_date:
                     closest_idx = i
@@ -372,16 +429,15 @@ def get_stock_price_yahoo(symbol: str, date_str: str, time_str: Optional[str] = 
                 if diff < min_diff and ts <= target_ts + 86400:  # Within 1 day after
                     min_diff = diff
                     closest_idx = i
-        
-        # Extract OHLCV data
-        candle_ts = timestamps[closest_idx]
-        candle_date = datetime.fromtimestamp(candle_ts).strftime("%Y-%m-%d")
-        
-        open_price = indicators["open"][closest_idx]
-        high_price = indicators["high"][closest_idx]
-        low_price = indicators["low"][closest_idx]
-        close_price = indicators["close"][closest_idx]
-        volume = indicators["volume"][closest_idx]
+            
+            candle_start_date = datetime.fromtimestamp(timestamps[closest_idx]).strftime("%Y-%m-%d")
+            candle_end_date = None  # Not used for daily
+            
+            open_price = indicators["open"][closest_idx]
+            high_price = indicators["high"][closest_idx]
+            low_price = indicators["low"][closest_idx]
+            close_price = indicators["close"][closest_idx]
+            volume = indicators["volume"][closest_idx]
         
         # Check for None values
         if None in [open_price, high_price, low_price, close_price, volume]:
@@ -398,7 +454,8 @@ def get_stock_price_yahoo(symbol: str, date_str: str, time_str: Optional[str] = 
             "symbol": symbol,
             "market": "Stocks (Yahoo Finance)",
             "requested_date": date_str,
-            "candle_date": candle_date,
+            "candle_start_date": candle_start_date,
+            "candle_end_date": candle_end_date,
             "timeframe": timeframe_display.get(timeframe, "Daily"),
             "open": float(open_price),
             "high": float(high_price),
@@ -407,12 +464,9 @@ def get_stock_price_yahoo(symbol: str, date_str: str, time_str: Optional[str] = 
             "volume": float(volume)
         }
         
-        # Add note if date was adjusted
-        if candle_date != date_str:
-            if timeframe == "1d":
-                result["note"] = f"Market was closed on {date_str}. Showing closest trading day."
-            else:
-                result["note"] = f"Showing {timeframe_display[timeframe].lower()} candle containing {date_str}."
+        # Add note if date was adjusted (only for daily)
+        if timeframe == "1d" and candle_start_date != date_str:
+            result["note"] = f"Market was closed on {date_str}. Showing closest trading day."
         
         return result
     
@@ -758,6 +812,14 @@ def print_stock_result(result: Dict[str, Any]):
     if no_movement and result['volume'] == 0 and not has_existing_warning:
         holiday_warning = f"\n{YELLOW}⚠ WARNING: No price movement detected. This day might be a holiday for {market_type}.{RESET}\n{DIM}   Check market reports to verify if trading was active on this date.{RESET}\n"
     
+    # Format candle date display based on timeframe
+    if result.get('candle_end_date'):
+        # Weekly or monthly - show period
+        candle_date_display = f"{DIM}Candle Period:  {result['candle_start_date']} → {result['candle_end_date']}{RESET}"
+    else:
+        # Daily - show single date
+        candle_date_display = f"{DIM}Candle Date:    {result['candle_start_date']}{RESET}"
+    
     output = f"""
 {PURPLE}{'─' * 70}{RESET}
 {BOLD}{BRIGHT_PURPLE}STOCKSCAN - STOCK PRICE LOOKUP{RESET}
@@ -768,7 +830,7 @@ def print_stock_result(result: Dict[str, Any]):
 {CYAN}REQUESTED DATE:{RESET}  {result['requested_date']}
 {CYAN}TIMEFRAME:{RESET}       {result['timeframe']}
 
-{DIM}Candle Date:    {result['candle_date']}{RESET}
+{candle_date_display}
 {note_text}
 {CYAN}CANDLE DATA:{RESET}
   Open:   {currency}{result['open']:,.2f}
@@ -781,8 +843,8 @@ def print_stock_result(result: Dict[str, Any]):
   {change_color}{BOLD}Change:     {change_sign}{currency}{abs(price_change):,.2f}{RESET}
   {change_color}{BOLD}Percentage: {change_sign}{percentage_change:.2f}%{RESET}
 {holiday_warning}
-{DIM}Note: This uses OHLCV candle logic. The CLOSE price of the daily
-      candle for your requested date is shown as the price.
+{DIM}Note: This uses OHLCV candle logic. The CLOSE price of the candle
+      for your requested period is shown as the price.
       Price movement shows the change from Open to Close.{RESET}
 
 {PURPLE}{'─' * 70}{RESET}
@@ -921,7 +983,7 @@ def interactive_mode():
                 
                 # Check if timeframe was provided
                 timeframe = None
-                valid_timeframes = ['5m', '15m', '30m', '1h', '4h', '12h', '1d', '3d', '1w', '1M']
+                valid_timeframes = ['1s', '1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '8h', '12h', '1d', '3d', '1w', '1M']
                 if len(parts) > 2:
                     # Last part might be timeframe
                     last_part = parts[-1]
@@ -936,38 +998,50 @@ def interactive_mode():
                     print(f"\n{CYAN}{'─' * 50}{RESET}")
                     print(f"{BOLD}{BRIGHT_PURPLE}SELECT TIMEFRAME{RESET}\n")
                     print(f"{CYAN}Available timeframes:{RESET}")
-                    print(f"  {GREEN}[1]{RESET}  5m   - 5 minutes")
-                    print(f"  {GREEN}[2]{RESET}  15m  - 15 minutes")
-                    print(f"  {GREEN}[3]{RESET}  30m  - 30 minutes")
-                    print(f"  {GREEN}[4]{RESET}  1h   - 1 hour")
-                    print(f"  {GREEN}[5]{RESET}  4h   - 4 hours")
-                    print(f"  {GREEN}[6]{RESET}  12h  - 12 hours")
-                    print(f"  {GREEN}[7]{RESET}  1d   - 1 day")
-                    print(f"  {GREEN}[8]{RESET}  3d   - 3 days")
-                    print(f"  {GREEN}[9]{RESET}  1w   - 1 week")
-                    print(f"  {GREEN}[10]{RESET} 1M   - 1 month\n")
+                    print(f"  {GREEN}[1]{RESET}  1s   - 1 second")
+                    print(f"  {GREEN}[2]{RESET}  1m   - 1 minute")
+                    print(f"  {GREEN}[3]{RESET}  3m   - 3 minutes")
+                    print(f"  {GREEN}[4]{RESET}  5m   - 5 minutes")
+                    print(f"  {GREEN}[5]{RESET}  15m  - 15 minutes")
+                    print(f"  {GREEN}[6]{RESET}  30m  - 30 minutes")
+                    print(f"  {GREEN}[7]{RESET}  1h   - 1 hour")
+                    print(f"  {GREEN}[8]{RESET}  2h   - 2 hours")
+                    print(f"  {GREEN}[9]{RESET}  4h   - 4 hours")
+                    print(f"  {GREEN}[10]{RESET} 6h   - 6 hours")
+                    print(f"  {GREEN}[11]{RESET} 8h   - 8 hours")
+                    print(f"  {GREEN}[12]{RESET} 12h  - 12 hours")
+                    print(f"  {GREEN}[13]{RESET} 1d   - 1 day")
+                    print(f"  {GREEN}[14]{RESET} 3d   - 3 days")
+                    print(f"  {GREEN}[15]{RESET} 1w   - 1 week")
+                    print(f"  {GREEN}[16]{RESET} 1M   - 1 month\n")
                     
                     timeframe_map = {
-                        '1': '5m',
-                        '2': '15m',
-                        '3': '30m',
-                        '4': '1h',
-                        '5': '4h',
-                        '6': '12h',
-                        '7': '1d',
-                        '8': '3d',
-                        '9': '1w',
-                        '10': '1M'
+                        '1': '1s',
+                        '2': '1m',
+                        '3': '3m',
+                        '4': '5m',
+                        '5': '15m',
+                        '6': '30m',
+                        '7': '1h',
+                        '8': '2h',
+                        '9': '4h',
+                        '10': '6h',
+                        '11': '8h',
+                        '12': '12h',
+                        '13': '1d',
+                        '14': '3d',
+                        '15': '1w',
+                        '16': '1M'
                     }
                     
                     while True:
-                        tf_choice = input(f"{CYAN}Select timeframe (1-10):{RESET} ").strip()
+                        tf_choice = input(f"{CYAN}Select timeframe (1-16):{RESET} ").strip()
                         
                         if tf_choice in timeframe_map:
                             timeframe = timeframe_map[tf_choice]
                             break
                         else:
-                            print(f"{RED}⚠ Invalid choice! Please enter a number between 1 and 10{RESET}")
+                            print(f"{RED}⚠ Invalid choice! Please enter a number between 1 and 16{RESET}")
                 
                 result = get_crypto_price(symbol.upper(), date, time, timeframe)
                 print_crypto_result(result)
@@ -998,7 +1072,7 @@ def main():
     crypto_parser.add_argument('date', help='Date (YYYY-MM-DD)')
     crypto_parser.add_argument('time', nargs='?', help='Time (HH:MM, optional)')
     crypto_parser.add_argument('--timeframe', '-t', 
-                              choices=['5m', '15m', '30m', '1h', '4h', '12h', '1d', '3d', '1w', '1M'],
+                              choices=['1s', '1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '8h', '12h', '1d', '3d', '1w', '1M'],
                               default='5m',
                               help='Candle timeframe (default: 5m)')
     
