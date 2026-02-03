@@ -197,9 +197,54 @@ def get_crypto_price(symbol: str, date_str: str, time_str: Optional[str] = None,
         interval = timeframe if timeframe in timeframe_ms else "1m"
         window = timeframe_ms[interval]
         
-        # For weekly/monthly timeframes, start from exact date and go forward
-        if interval in ["1w", "1M"]:
-            # Start from the exact requested date
+        # For intraday timeframes (under 1d), fetch 1-minute candles and aggregate
+        # This allows starting from ANY arbitrary time
+        intraday_timeframes = ['1s', '1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '8h', '12h']
+        
+        if interval in intraday_timeframes:
+            # Fetch 1-minute candles to aggregate into custom period
+            start_time = target_timestamp_ms
+            end_time = target_timestamp_ms + window
+            
+            url = f"{BINANCE_BASE}/klines"
+            params = {
+                "symbol": symbol,
+                "interval": "1m",  # Fetch 1-minute candles
+                "startTime": start_time,
+                "endTime": end_time,
+                "limit": 1500  # Max limit
+            }
+            
+            response = requests.get(url, params=params, timeout=10)
+            response.raise_for_status()
+            data = response.json()
+            
+            if not data:
+                return {"error": "No data available for this time. Asset may not have existed yet."}
+            
+            # Aggregate the 1-minute candles into one
+            opens = [float(candle[1]) for candle in data]
+            highs = [float(candle[2]) for candle in data]
+            lows = [float(candle[3]) for candle in data]
+            closes = [float(candle[4]) for candle in data]
+            volumes = [float(candle[5]) for candle in data]
+            
+            # Create aggregated candle
+            target_candle = [
+                data[0][0],  # Open time (first candle)
+                opens[0],  # First open
+                max(highs),  # Highest high
+                min(lows),  # Lowest low
+                closes[-1],  # Last close
+                sum(volumes),  # Total volume
+                data[-1][6]  # Close time (last candle)
+            ]
+            
+            candle_open_time = dt
+            candle_close_time = datetime.fromtimestamp(end_time / 1000)
+            
+        elif interval in ["1w", "1M"]:
+            # For weekly/monthly timeframes, start from exact date and go forward
             start_time = target_timestamp_ms
             end_time = target_timestamp_ms + window
             
@@ -225,7 +270,7 @@ def get_crypto_price(symbol: str, date_str: str, time_str: Optional[str] = None,
             candle_open_time = dt  # Start from requested date
             candle_close_time = dt + timedelta(milliseconds=window)
         else:
-            # For other timeframes, use the old logic (find candle containing the time)
+            # For daily and above (3d), use standard Binance candles
             url = f"{BINANCE_BASE}/klines"
             params = {
                 "symbol": symbol,
@@ -237,8 +282,7 @@ def get_crypto_price(symbol: str, date_str: str, time_str: Optional[str] = None,
             
             response = requests.get(url, params=params, timeout=10)
             response.raise_for_status()
-            data = response.json()
-            
+            data = response.json()            
             if not data:
                 return {"error": "No data available for this time. Asset may not have existed yet."}
             
@@ -262,7 +306,42 @@ def get_crypto_price(symbol: str, date_str: str, time_str: Optional[str] = None,
             candle_open_time = datetime.fromtimestamp(target_candle[0] / 1000)
             candle_close_time = datetime.fromtimestamp(target_candle[6] / 1000)
         
-        return {
+        # Check if candle crosses midnight (spans two different dates)
+        crosses_midnight = candle_open_time.date() != candle_close_time.date()
+        midnight_note = None
+        
+        if crosses_midnight:
+            # Calculate time in each day
+            start_date = candle_open_time.date()
+            end_date = candle_close_time.date()
+            
+            # Time until midnight from start
+            midnight_of_start = datetime.combine(start_date, datetime.max.time()).replace(microsecond=0) + timedelta(seconds=1)
+            time_in_first_day = (midnight_of_start - candle_open_time).total_seconds()
+            
+            # Time from midnight in next day
+            time_in_second_day = (candle_close_time - midnight_of_start).total_seconds()
+            
+            # Convert to readable format with hours and minutes
+            def seconds_to_readable(seconds):
+                if seconds < 60:
+                    return f"{int(seconds)} second(s)"
+                elif seconds < 3600:
+                    minutes = int(seconds / 60)
+                    return f"{minutes} minute(s)"
+                else:
+                    hours = int(seconds / 3600)
+                    remaining_seconds = seconds % 3600
+                    minutes = int(remaining_seconds / 60)
+                    
+                    if minutes > 0:
+                        return f"{hours} hour(s) {minutes} minute(s)"
+                    else:
+                        return f"{hours} hour(s)"
+            
+            midnight_note = f"{seconds_to_readable(time_in_first_day)} from {start_date.strftime('%Y-%m-%d')}, {seconds_to_readable(time_in_second_day)} from {end_date.strftime('%Y-%m-%d')}"
+        
+        result = {
             "symbol": symbol,
             "market": "Crypto (Binance)",
             "requested_time": dt.strftime("%Y-%m-%d %H:%M UTC"),
@@ -273,8 +352,12 @@ def get_crypto_price(symbol: str, date_str: str, time_str: Optional[str] = None,
             "high": float(target_candle[2]),
             "low": float(target_candle[3]),
             "close": float(target_candle[4]),  # This is the price at that time
-            "volume": float(target_candle[5])
+            "volume": float(target_candle[5]),
+            "crosses_midnight": crosses_midnight,
+            "midnight_note": midnight_note
         }
+        
+        return result
     
     except requests.exceptions.RequestException as e:
         return {"error": f"Failed to fetch data from Binance: {str(e)}"}
@@ -795,6 +878,11 @@ def print_crypto_result(result: Dict[str, Any]):
     if no_movement and result['volume'] == 0:
         holiday_warning = f"\n{YELLOW}⚠ WARNING: No price movement detected. This day might be a holiday for crypto markets.{RESET}\n{DIM}   Check market reports to verify if trading was active on this date.{RESET}\n"
     
+    # Midnight crossing note
+    midnight_crossing_note = ""
+    if result.get('crosses_midnight') and result.get('midnight_note'):
+        midnight_crossing_note = f"\n{YELLOW}ℹ Note: Timeframe spans across two dates.{RESET}\n{DIM}   Period includes: {result['midnight_note']}{RESET}\n"
+    
     output = f"""
 {PURPLE}{'─' * 70}{RESET}
 {BOLD}{BRIGHT_PURPLE}STOCKSCAN - CRYPTO PRICE LOOKUP{RESET}
@@ -806,7 +894,7 @@ def print_crypto_result(result: Dict[str, Any]):
 {CYAN}TIMEFRAME:{RESET}       {result['timeframe']}
 
 {DIM}Candle Period:  {result['candle_start']} → {result['candle_end']}{RESET}
-
+{midnight_crossing_note}
 {CYAN}CANDLE DATA:{RESET}
   Open:   ${result['open']:,.8f}
   High:   ${result['high']:,.8f}
@@ -1026,13 +1114,12 @@ def interactive_mode():
             # Crypto mode
             print(f"\n{CYAN}{'─' * 70}{RESET}")
             print(f"{BOLD}{BRIGHT_PURPLE}CRYPTO PRICE LOOKUP{RESET}\n")
-            print(f"{CYAN}Syntax:{RESET} {GREEN}<SYMBOL> <DATE> <TIME> [TIMEFRAME]{RESET}")
+            print(f"{CYAN}Syntax:{RESET} {GREEN}<SYMBOL> <DATE>{RESET}")
             print(f"{CYAN}Examples:{RESET}")
-            print(f"  BTCUSDT 2026-01-15 14:30     {DIM}(Will ask for timeframe){RESET}")
-            print(f"  BTCUSDT 2026-01-15 14:30 1h  {DIM}(Direct with timeframe){RESET}")
-            print(f"  ETHUSDT 2026-01-15 10:00 5m  {DIM}(Direct with timeframe){RESET}\n")
+            print(f"  BTCUSDT 2026-01-15")
+            print(f"  ETHUSDT 2026-01-15")
+            print(f"  BNBUSDT 2026-01-10\n")
             print(f"{DIM}Date format: YYYY-MM-DD{RESET}")
-            print(f"{DIM}Time format: HH:MM (optional for daily timeframe){RESET}")
             print(f"{DIM}Type 'back' to return to market selection{RESET}\n")
             
             while True:
@@ -1048,25 +1135,28 @@ def interactive_mode():
                 parts = user_input.split()
                 
                 if len(parts) < 2:
-                    print(f"{RED}⚠ Invalid syntax! Use: <SYMBOL> <DATE> [TIME] [TIMEFRAME]{RESET}")
-                    print(f"{YELLOW}Example: BTCUSDT 2026-01-15 14:30{RESET}")
+                    print(f"{RED}⚠ Invalid syntax! Use: <SYMBOL> <DATE>{RESET}")
+                    print(f"{YELLOW}Example: BTCUSDT 2026-01-15{RESET}")
                     continue
                 
                 symbol = parts[0]
                 date = parts[1]
-                time = parts[2] if len(parts) > 2 and ':' in parts[2] else None
+                time = None  # Will be asked later if needed
                 
-                # Check if timeframe was provided
+                # Check if timeframe was provided (optional - for advanced users)
                 timeframe = None
                 valid_timeframes = ['1s', '1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '8h', '12h', '1d', '3d', '1w', '1M']
+                
+                # Check if user provided time and/or timeframe (advanced usage)
                 if len(parts) > 2:
-                    # Last part might be timeframe
-                    last_part = parts[-1]
-                    if last_part in valid_timeframes:
-                        timeframe = last_part
-                    # If we have 4 parts: symbol date time timeframe
-                    elif len(parts) == 4 and parts[3] in valid_timeframes:
-                        timeframe = parts[3]
+                    # Could be: BTCUSDT 2026-01-15 14:30 or BTCUSDT 2026-01-15 1h
+                    if ':' in parts[2]:
+                        time = parts[2]
+                        # Check if timeframe is also provided
+                        if len(parts) > 3 and parts[3] in valid_timeframes:
+                            timeframe = parts[3]
+                    elif parts[2] in valid_timeframes:
+                        timeframe = parts[2]
                 
                 # If no timeframe provided, ask user to select
                 if timeframe is None:
@@ -1117,6 +1207,53 @@ def interactive_mode():
                             break
                         else:
                             print(f"{RED}⚠ Invalid choice! Please enter a number between 1 and 16{RESET}")
+                
+                # For timeframes under 1d, ask for start time if not provided
+                intraday_timeframes = ['1s', '1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '8h', '12h']
+                if timeframe in intraday_timeframes and not time:
+                    print(f"\n{CYAN}{'─' * 50}{RESET}")
+                    print(f"{BOLD}{BRIGHT_PURPLE}ENTER START TIME{RESET}\n")
+                    print(f"{CYAN}What time should the {timeframe} timeframe start?{RESET}\n")
+                    print(f"{DIM}Format: HH:MM (24-hour format){RESET}")
+                    print(f"{DIM}Range:  00:00 to 23:59{RESET}")
+                    print(f"{DIM}Example: 14:30, 09:15, 23:59{RESET}\n")
+                    
+                    while True:
+                        time_input = input(f"{CYAN}Enter start time (HH:MM):{RESET} ").strip()
+                        
+                        # Validate time format
+                        if not time_input:
+                            print(f"{RED}⚠ Please enter a time!{RESET}")
+                            continue
+                        
+                        if ':' not in time_input:
+                            print(f"{RED}⚠ Invalid format! Use HH:MM (e.g., 14:30){RESET}")
+                            continue
+                        
+                        try:
+                            time_parts = time_input.split(':')
+                            if len(time_parts) != 2:
+                                print(f"{RED}⚠ Invalid format! Use HH:MM (e.g., 14:30){RESET}")
+                                continue
+                            
+                            hours = int(time_parts[0])
+                            minutes = int(time_parts[1])
+                            
+                            if hours < 0 or hours > 23:
+                                print(f"{RED}⚠ Hours must be between 00 and 23!{RESET}")
+                                continue
+                            
+                            if minutes < 0 or minutes > 59:
+                                print(f"{RED}⚠ Minutes must be between 00 and 59!{RESET}")
+                                continue
+                            
+                            # Format time properly (ensure 2 digits)
+                            time = f"{hours:02d}:{minutes:02d}"
+                            break
+                        
+                        except ValueError:
+                            print(f"{RED}⚠ Invalid time! Use numbers only (e.g., 14:30){RESET}")
+                            continue
                 
                 result = get_crypto_price(symbol.upper(), date, time, timeframe)
                 print_crypto_result(result)
