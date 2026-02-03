@@ -351,13 +351,15 @@ def get_stock_price_yahoo(symbol: str, date_str: str, time_str: Optional[str] = 
         # For weekly/monthly timeframes, fetch DAILY data and aggregate
         if timeframe in ["1wk", "1mo"]:
             # Fetch daily data for the period
-            start_dt = dt
+            # Add buffer days before to handle holidays/weekends at start
+            start_dt = dt - timedelta(days=5)  # Go back 5 days to catch the requested date
             
             # Calculate end date based on timeframe
+            # Add extra days to account for weekends and holidays
             if timeframe == "1wk":
-                end_dt = dt + timedelta(days=7)
+                end_dt = dt + timedelta(days=14)  # Fetch 2 weeks to ensure we get 7 calendar days of data
             else:  # 1mo
-                end_dt = dt + timedelta(days=30)
+                end_dt = dt + timedelta(days=40)  # Fetch 40 days to ensure we get 30 calendar days of data
             
             period1 = int(start_dt.timestamp())
             period2 = int(end_dt.timestamp())
@@ -418,12 +420,30 @@ def get_stock_price_yahoo(symbol: str, date_str: str, time_str: Optional[str] = 
             if not timestamps or len(timestamps) == 0:
                 return {"error": "No price data available for this period"}
             
-            # Aggregate all daily candles into one
-            opens = [indicators["open"][i] for i in range(len(timestamps)) if indicators["open"][i] is not None]
-            highs = [indicators["high"][i] for i in range(len(timestamps)) if indicators["high"][i] is not None]
-            lows = [indicators["low"][i] for i in range(len(timestamps)) if indicators["low"][i] is not None]
-            closes = [indicators["close"][i] for i in range(len(timestamps)) if indicators["close"][i] is not None]
-            volumes = [indicators["volume"][i] for i in range(len(timestamps)) if indicators["volume"][i] is not None]
+            # Calculate the end date for the period (inclusive)
+            if timeframe == "1wk":
+                period_end_date = (dt + timedelta(days=6)).date()  # 7 days total (day 0 to day 6)
+            else:  # 1mo
+                period_end_date = (dt + timedelta(days=29)).date()  # 30 days total (day 0 to day 29)
+            
+            # Filter timestamps to only include dates within the requested period
+            filtered_indices = []
+            
+            for i, ts in enumerate(timestamps):
+                ts_date = datetime.fromtimestamp(ts).date()
+                # Include if date is >= requested date AND <= period end date (inclusive)
+                if dt.date() <= ts_date <= period_end_date:
+                    filtered_indices.append(i)
+            
+            if not filtered_indices:
+                return {"error": "No trading data available for the requested period"}
+            
+            # Aggregate only the filtered daily candles
+            opens = [indicators["open"][i] for i in filtered_indices if indicators["open"][i] is not None]
+            highs = [indicators["high"][i] for i in filtered_indices if indicators["high"][i] is not None]
+            lows = [indicators["low"][i] for i in filtered_indices if indicators["low"][i] is not None]
+            closes = [indicators["close"][i] for i in filtered_indices if indicators["close"][i] is not None]
+            volumes = [indicators["volume"][i] for i in filtered_indices if indicators["volume"][i] is not None]
             
             if not opens or not closes:
                 return {"error": "Incomplete data for this period"}
@@ -435,8 +455,31 @@ def get_stock_price_yahoo(symbol: str, date_str: str, time_str: Optional[str] = 
             close_price = closes[-1]  # Last close
             volume = sum(volumes)  # Total volume
             
-            candle_start_date = datetime.fromtimestamp(timestamps[0]).strftime("%Y-%m-%d")
-            candle_end_date = datetime.fromtimestamp(timestamps[-1]).strftime("%Y-%m-%d")
+            candle_start_date = datetime.fromtimestamp(timestamps[filtered_indices[0]]).strftime("%Y-%m-%d")
+            candle_end_date = datetime.fromtimestamp(timestamps[filtered_indices[-1]]).strftime("%Y-%m-%d")
+            
+            # Calculate missing days (holidays/weekends)
+            # Compare requested period vs actual trading days
+            if timeframe == "1wk":
+                expected_period_days = 7
+            else:  # 1mo
+                expected_period_days = 30
+            
+            # Count actual calendar days covered by trading data
+            start_date_obj = datetime.fromtimestamp(timestamps[filtered_indices[0]]).date()
+            end_date_obj = datetime.fromtimestamp(timestamps[filtered_indices[-1]]).date()
+            actual_calendar_days = (end_date_obj - start_date_obj).days + 1
+            trading_days = len(filtered_indices)
+            
+            # Missing days = (expected period - actual calendar days) + (actual calendar days - trading days)
+            # Simplified: missing days = expected period - trading days
+            missing_days = expected_period_days - trading_days
+            
+            # Store missing days info for display
+            if missing_days > 0:
+                result_missing_days = missing_days
+            else:
+                result_missing_days = None
         else:
             # Daily - find the closest date to our target
             target_ts = int(dt.timestamp())
@@ -460,6 +503,7 @@ def get_stock_price_yahoo(symbol: str, date_str: str, time_str: Optional[str] = 
             
             candle_start_date = datetime.fromtimestamp(timestamps[closest_idx]).strftime("%Y-%m-%d")
             candle_end_date = None  # Not used for daily
+            result_missing_days = None  # Not used for daily
             
             open_price = indicators["open"][closest_idx]
             high_price = indicators["high"][closest_idx]
@@ -489,7 +533,8 @@ def get_stock_price_yahoo(symbol: str, date_str: str, time_str: Optional[str] = 
             "high": float(high_price),
             "low": float(low_price),
             "close": float(close_price),
-            "volume": float(volume)
+            "volume": float(volume),
+            "missing_days": result_missing_days
         }
         
         # Add note if date was adjusted (only for daily)
@@ -844,6 +889,11 @@ def print_stock_result(result: Dict[str, Any]):
     if result.get('candle_end_date'):
         # Weekly or monthly - show period
         candle_date_display = f"{DIM}Candle Period:  {result['candle_start_date']} → {result['candle_end_date']}{RESET}"
+        
+        # Add holiday/weekend notification if there are missing days
+        if result.get('missing_days') and result['missing_days'] > 0:
+            missing_days = result['missing_days']
+            candle_date_display += f"\n{YELLOW}ℹ Note: {missing_days} non-trading day(s) in this period (weekends/holidays).{RESET}\n{DIM}   Check data after these {missing_days} day(s) for complete market activity.{RESET}"
     else:
         # Daily - show single date
         candle_date_display = f"{DIM}Candle Date:    {result['candle_start_date']}{RESET}"
