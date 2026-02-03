@@ -207,6 +207,12 @@ PRICE MOVEMENT:
 - **Non-Trading Days** = Weekends and holidays don't have trading data
 - **Example**: A week with 1 holiday + 2 weekend days = only 4 trading days
 
+**CRYPTO CUSTOM START TIME (Intraday Timeframes):**
+- **Any Start Time** = For timeframes under 1d, you can start from ANY time (14:39, 23:59, etc.)
+- **Perfect Timing** = 14:39 with 1h = exactly 14:39:00 to 15:39:00
+- **Midnight Crossing** = If period crosses midnight, shows time split across dates
+- **Example**: 23:59 with 3m = "1 minute from 2026-01-02, 2 minutes from 2026-01-03"
+
 **Example:**
 - If a stock opened at $100 and closed at $105:
   - Change: +$5.00 (gained $5)
@@ -236,15 +242,27 @@ PRICE MOVEMENT:
 6. Select timeframe: `2` (Weekly)
 7. See the period: Jan 15 → Jan 21 with 4 trading days
 
-### Example 3: Check Bitcoin Price
+### Example 3: Check Bitcoin Price with Custom Start Time
 
 1. Open terminal
 2. Navigate to folder: `cd stockscan`
 3. Run: `python stockscan.py` (or `py stockscan.py` on Windows)
 4. Press `2` (for Crypto)
-5. Type: `BTCUSDT 2026-01-15 14:30 1h`
-6. Press Enter
-7. See the price: $97,040.75
+5. Type: `BTCUSDT 2026-01-02`
+6. Select timeframe: `7` (1 hour)
+7. Enter start time: `14:39`
+8. See the period: 14:39 → 15:39 with exact pricing
+
+### Example 4: Check Bitcoin with Midnight Crossing
+
+1. Open terminal
+2. Navigate to folder: `cd stockscan`
+3. Run: `python stockscan.py` (or `py stockscan.py` on Windows)
+4. Press `2` (for Crypto)
+5. Type: `BTCUSDT 2026-01-02`
+6. Select timeframe: `3` (3 minutes)
+7. Enter start time: `23:59`
+8. See the split: 1 min from Jan 2, 2 mins from Jan 3
 
 ---
 

@@ -67,7 +67,6 @@ Then run without arguments:
 ```bash
 python stockscan.py
 ```
-
 Or on Windows, you can use:
 ```bash
 py stockscan.py
@@ -76,8 +75,10 @@ py stockscan.py
 You'll see:
 1. ✨ Big purple STOCKSCAN banner
 2. 📋 Choose: `[1] Stocks` or `[2] Crypto`
-3. 📝 Enter your lookup (e.g., `AAPL 2026-01-15`)
-4. 💵 Get the price instantly!
+3. 📝 Enter your lookup (e.g., `AAPL 2026-01-15` or `BTCUSDT 2026-01-15`)
+4. 🕐 Select timeframe (interactive prompt)
+5. ⏰ For crypto intraday: Enter custom start time (e.g., 14:39)
+6. 💵 Get the price instantly!
 
 ### Command Line Mode (Fastest)
 
@@ -97,7 +98,10 @@ python stockscan.py stock RELIANCE.NS 2024-01-15 --timeframe 1mo
 ```bash
 python stockscan.py crypto BTCUSDT 2026-01-15 14:30 --timeframe 1h
 python stockscan.py crypto ETHUSDT 2026-01-15 10:00 --timeframe 5m
+python stockscan.py crypto BTCUSDT 2026-01-15 23:59 --timeframe 3m
 ```
+
+**Note:** For crypto intraday timeframes (under 1d), you can specify ANY start time (HH:MM format). The tool will create a custom period starting from that exact time!
 
 **Windows users:** Replace `python` with `py` if needed
 
@@ -169,6 +173,71 @@ Note: This uses OHLCV candle logic. The CLOSE price of the daily
 ──────────────────────────────────────────────────────────────────────
 ```
 
+### Crypto Intraday with Custom Start Time
+```
+──────────────────────────────────────────────────────────────────────
+STOCKSCAN - CRYPTO PRICE LOOKUP
+──────────────────────────────────────────────────────────────────────
+
+ASSET:           BTCUSDT
+MARKET:          Crypto (Binance)
+REQUESTED TIME:  2026-01-02 14:39 UTC
+TIMEFRAME:       1h
+
+Candle Period:  2026-01-02 14:39 UTC → 2026-01-02 15:39 UTC
+
+CANDLE DATA:
+  Open:   $89,133.80000000
+  High:   $89,800.00000000
+  Low:    $89,106.34000000
+  Close:  $89,715.36000000  ← Price at that time
+  Volume: 1,253.49
+
+PRICE MOVEMENT:
+  Change:     +$581.56000000
+  Percentage: +0.65%
+
+Note: This uses OHLCV candle logic. The CLOSE price of the candle
+      containing your requested time is shown as the price.
+      Price movement shows the change from Open to Close.
+
+──────────────────────────────────────────────────────────────────────
+```
+
+### Crypto with Midnight Crossing
+```
+──────────────────────────────────────────────────────────────────────
+STOCKSCAN - CRYPTO PRICE LOOKUP
+──────────────────────────────────────────────────────────────────────
+
+ASSET:           BTCUSDT
+MARKET:          Crypto (Binance)
+REQUESTED TIME:  2026-01-02 23:59 UTC
+TIMEFRAME:       3m
+
+Candle Period:  2026-01-02 23:59 UTC → 2026-01-03 00:02 UTC
+
+ℹ Note: Timeframe spans across two dates.
+   Period includes: 1 minute(s) from 2026-01-02, 2 minute(s) from 2026-01-03
+
+CANDLE DATA:
+  Open:   $90,305.99000000
+  High:   $90,339.89000000
+  Low:    $90,132.94000000
+  Close:  $90,157.13000000  ← Price at that time
+  Volume: 54.84
+
+PRICE MOVEMENT:
+  Change:     $148.86000000
+  Percentage: -0.16%
+
+Note: This uses OHLCV candle logic. The CLOSE price of the candle
+      containing your requested time is shown as the price.
+      Price movement shows the change from Open to Close.
+
+──────────────────────────────────────────────────────────────────────
+```
+
 ### 📊 Understanding the Output
 
 **CANDLE DATA** - Shows the OHLCV (Open, High, Low, Close, Volume) for that time period:
@@ -192,6 +261,14 @@ Note: This uses OHLCV candle logic. The CLOSE price of the daily
 - **Non-Trading Days**: Weekends and holidays are excluded from the data
 - **Example**: A week starting Monday with a holiday shows "4 trading days out of 7"
 
+**CRYPTO CUSTOM START TIME** - For crypto intraday timeframes (under 1d):
+- **Any Start Time**: You can specify ANY time (e.g., 14:39, 23:59) and the period starts exactly from that time
+- **Perfect Timing**: 14:39 with 1h timeframe = exactly 14:39:00 to 15:39:00
+- **Midnight Crossing**: If the period crosses midnight, it shows the time split across dates
+- **Example**: 23:59 with 3m = "1 minute(s) from 2026-01-02, 2 minute(s) from 2026-01-03"
+- **Non-Trading Days**: Weekends and holidays are excluded from the data
+- **Example**: A week starting Monday with a holiday shows "4 trading days out of 7"
+
 **Example**: If a stock opened at $100 and closed at $105:
 - Change: +$5.00 (gained $5)
 - Percentage: +5.00% (gained 5%)
@@ -204,6 +281,8 @@ Note: This uses OHLCV candle logic. The CLOSE price of the daily
 ✅ **1000+ Cryptocurrencies** - All Binance spot pairs  
 ✅ **All US & Indian Stocks** - NYSE, NASDAQ, AMEX, NSE, BSE  
 ✅ **Multiple Timeframes** - Crypto: 16 timeframes (1s to 1M) | Stocks: 3 timeframes (1d, 1wk, 1mo)  
+✅ **Custom Start Time** - For crypto intraday: Start from ANY time (14:39, 23:59, etc.) with perfect precision  
+✅ **Midnight Crossing Detection** - Automatically detects and shows time split across dates  
 ✅ **Historical Data** - Check any past date with full history  
 ✅ **Weekly/Monthly Periods** - Shows full calendar periods with trading day counts  
 ✅ **Price Movement Calculator** - Shows change and percentage gain/loss  
