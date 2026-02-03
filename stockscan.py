@@ -159,6 +159,18 @@ def get_crypto_price(symbol: str, date_str: str, time_str: Optional[str] = None,
         if dt > datetime.now():
             return {"error": "Future price data does not exist."}
         
+        # For weekly/monthly timeframes, check if the period has completed
+        if timeframe in ["1w", "1M"]:
+            if timeframe == "1w":
+                end_dt = dt + timedelta(days=7)
+                period_name = "week"
+            else:  # 1M
+                end_dt = dt + timedelta(days=30)
+                period_name = "month"
+            
+            if end_dt > datetime.now():
+                return {"error": f"The {period_name} period starting from {date_str} has not completed yet.\nEnd date would be {end_dt.strftime('%Y-%m-%d')}, which is in the future.\nPlease choose an earlier date or use a shorter timeframe."}
+        
         # Convert to milliseconds for Binance
         target_timestamp_ms = int(dt.timestamp() * 1000)
         
@@ -291,7 +303,11 @@ def get_stock_price(symbol: str, date_str: str, time_str: Optional[str] = None, 
     if "error" not in result:
         return result
     
-    # If Yahoo Finance failed, return error
+    # If it's a validation error (future period), pass it through
+    if "has not completed yet" in result["error"]:
+        return result
+    
+    # If Yahoo Finance failed for other reasons, return generic error
     return {
         "error": "Unable to fetch stock data from Yahoo Finance.\n" +
                  "Please check the symbol and try again."
@@ -310,6 +326,18 @@ def get_stock_price_yahoo(symbol: str, date_str: str, time_str: Optional[str] = 
         # Check if future
         if dt > datetime.now():
             return {"error": "Future price data does not exist."}
+        
+        # For weekly/monthly timeframes, check if the period has completed
+        if timeframe in ["1wk", "1mo"]:
+            if timeframe == "1wk":
+                end_dt = dt + timedelta(days=7)
+                period_name = "week"
+            else:  # 1mo
+                end_dt = dt + timedelta(days=30)
+                period_name = "month"
+            
+            if end_dt > datetime.now():
+                return {"error": f"The {period_name} period starting from {date_str} has not completed yet.\nEnd date would be {end_dt.strftime('%Y-%m-%d')}, which is in the future.\nPlease choose an earlier date or use a shorter timeframe."}
         
         # Map timeframe to Yahoo Finance interval
         interval_map = {
