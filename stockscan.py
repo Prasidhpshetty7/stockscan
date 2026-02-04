@@ -43,6 +43,157 @@ FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY", "")
 ALPHAVANTAGE_BASE = "https://www.alphavantage.co/query"
 ALPHAVANTAGE_API_KEY = os.getenv("ALPHAVANTAGE_API_KEY", "demo")
 
+# Commodity ETF Symbols (130+ commodity ETFs)
+COMMODITY_ETFS = {
+    # Precious Metals - Gold
+    "GLD": "SPDR Gold Shares",
+    "IAU": "iShares Gold Trust",
+    "GLDM": "SPDR Gold MiniShares",
+    "SGOL": "abrdn Physical Gold Shares",
+    "BAR": "GraniteShares Gold Trust",
+    "AAAU": "Goldman Sachs Physical Gold",
+    "OUNZ": "VanEck Merk Gold Trust",
+    "GLDL": "Goldman Sachs ActiveBeta Gold",
+    "IAUM": "iShares Gold Trust Micro",
+    "AAAU": "Perth Mint Physical Gold",
+    
+    # Precious Metals - Silver
+    "SLV": "iShares Silver Trust",
+    "SIVR": "abrdn Physical Silver Shares",
+    "PSLV": "Sprott Physical Silver Trust",
+    "SLVP": "iShares MSCI Global Silver Miners",
+    
+    # Precious Metals - Platinum & Palladium
+    "PPLT": "abrdn Physical Platinum Shares",
+    "PALL": "abrdn Physical Palladium Shares",
+    
+    # Precious Metals - Multi-Metal
+    "GLTR": "abrdn Physical Precious Metals Basket",
+    "DBP": "Invesco DB Precious Metals Fund",
+    
+    # Energy - Crude Oil
+    "USO": "United States Oil Fund",
+    "UCO": "ProShares Ultra Bloomberg Crude Oil",
+    "DBO": "Invesco DB Oil Fund",
+    "USL": "United States 12 Month Oil Fund",
+    "SCO": "ProShares UltraShort Bloomberg Crude Oil",
+    "BNO": "United States Brent Oil Fund",
+    "DNO": "United States Short Oil Fund",
+    "OILK": "ProShares K-1 Free Crude Oil Strategy",
+    "OLEM": "iShares Commodities Select Strategy",
+    "USO": "United States Oil Fund LP",
+    
+    # Energy - Natural Gas
+    "UNG": "United States Natural Gas Fund",
+    "BOIL": "ProShares Ultra Bloomberg Natural Gas",
+    "KOLD": "ProShares UltraShort Bloomberg Natural Gas",
+    "UNL": "United States 12 Month Natural Gas Fund",
+    "GAZ": "iPath Series B Bloomberg Natural Gas",
+    "GASL": "Direxion Daily Natural Gas Related Bull 3X",
+    "GASX": "Direxion Daily Natural Gas Related Bear 3X",
+    
+    # Energy - Gasoline & Heating Oil
+    "UGA": "United States Gasoline Fund",
+    "UHN": "United States Heating Oil Fund",
+    
+    # Energy - Broad Energy
+    "DBE": "Invesco DB Energy Fund",
+    "IXC": "iShares Global Energy ETF",
+    "XLE": "Energy Select Sector SPDR Fund",
+    "VDE": "Vanguard Energy ETF",
+    "IYE": "iShares U.S. Energy ETF",
+    
+    # Agriculture - Grains
+    "CORN": "Teucrium Corn Fund",
+    "WEAT": "Teucrium Wheat Fund",
+    "SOYB": "Teucrium Soybean Fund",
+    "OATS": "Teucrium Oat Fund",
+    "RICE": "Teucrium Rice Fund",
+    "WEAT": "Teucrium Wheat Fund",
+    "CANE": "Teucrium Sugar Fund",
+    
+    # Agriculture - Soft Commodities
+    "JO": "iPath Series B Bloomberg Coffee",
+    "NIB": "iPath Bloomberg Cocoa",
+    "SGG": "iPath Series B Bloomberg Sugar",
+    "BAL": "iPath Bloomberg Cotton",
+    "WOOD": "iShares Global Timber & Forestry ETF",
+    "CUT": "Invesco MSCI Global Timber ETF",
+    
+    # Agriculture - Livestock
+    "COW": "iPath Series B Bloomberg Livestock",
+    
+    # Agriculture - Broad Agriculture
+    "DBA": "Invesco DB Agriculture Fund",
+    "TAGS": "Teucrium Agricultural Fund",
+    "RJA": "Elements Rogers International Commodity Agriculture",
+    "MOO": "VanEck Agribusiness ETF",
+    "VEGI": "iShares MSCI Global Agriculture Producers",
+    "PAGG": "Invesco Global Agriculture ETF",
+    "FTAG": "First Trust Indxx Global Agriculture ETF",
+    
+    # Industrial Metals - Copper
+    "CPER": "United States Copper Index Fund",
+    "JJC": "iPath Series B Bloomberg Copper",
+    "COPX": "Global X Copper Miners ETF",
+    
+    # Industrial Metals - Aluminum
+    "JJU": "iPath Series B Bloomberg Aluminum",
+    
+    # Industrial Metals - Nickel
+    "JJN": "iPath Series B Bloomberg Nickel",
+    
+    # Industrial Metals - Broad Base Metals
+    "DBB": "Invesco DB Base Metals Fund",
+    "PICK": "iShares MSCI Global Metals & Mining Producers",
+    "XME": "SPDR S&P Metals & Mining ETF",
+    
+    # Broad Commodity Baskets
+    "DBC": "Invesco DB Commodity Index Tracking Fund",
+    "PDBC": "Invesco Optimum Yield Diversified Commodity",
+    "GSG": "iShares S&P GSCI Commodity-Indexed Trust",
+    "USCI": "United States Commodity Index Fund",
+    "GCC": "WisdomTree Continuous Commodity Index Fund",
+    "RJI": "Elements Rogers International Commodity Index",
+    "COMT": "iShares Commodities Select Strategy ETF",
+    "CMDY": "iShares Bloomberg Roll Select Commodity Strategy",
+    "BCI": "abrdn Bloomberg All Commodity Strategy K-1 Free",
+    "FTGC": "First Trust Global Tactical Commodity Strategy",
+    "COMB": "GraniteShares Bloomberg Commodity Broad Strategy",
+    
+    # Uranium & Nuclear
+    "URA": "Global X Uranium ETF",
+    "URNM": "Sprott Uranium Miners ETF",
+    "NLR": "VanEck Uranium+Nuclear Energy ETF",
+    "HURA": "Horizons Global Uranium Index ETF",
+    
+    # Carbon Credits
+    "KRBN": "KraneShares Global Carbon Strategy ETF",
+    "KEUA": "KraneShares European Carbon Allowance Strategy",
+    
+    # Leveraged & Inverse Commodity ETFs
+    "UGL": "ProShares Ultra Gold",
+    "GLL": "ProShares UltraShort Gold",
+    "AGQ": "ProShares Ultra Silver",
+    "ZSL": "ProShares UltraShort Silver",
+    "UGLD": "VelocityShares 3x Long Gold ETN",
+    "DGLD": "VelocityShares 3x Inverse Gold ETN",
+    "USLV": "VelocityShares 3x Long Silver ETN",
+    "DSLV": "VelocityShares 3x Inverse Silver ETN",
+    "BOIL": "ProShares Ultra Bloomberg Natural Gas",
+    "KOLD": "ProShares UltraShort Bloomberg Natural Gas",
+    "UCO": "ProShares Ultra Bloomberg Crude Oil",
+    "SCO": "ProShares UltraShort Bloomberg Crude Oil",
+    "WTIU": "ProShares Ultra Bloomberg WTI Crude Oil",
+    "WTID": "ProShares UltraShort Bloomberg WTI Crude Oil",
+    
+    # Specialty Commodities
+    "PLTM": "GraniteShares Platinum Trust",
+    "PALL": "abrdn Physical Palladium Shares ETF",
+    "WITE": "ETRACS Bloomberg Commodity Index Total Return ETN",
+    "DJCI": "ETRACS Bloomberg Commodity Index Total Return ETN",
+}
+
 
 def print_banner():
     """Print beautiful purple ASCII banner"""
@@ -68,7 +219,7 @@ def print_description():
     """Print what StockScan does"""
     desc = f"""
 {CYAN}What is StockScan?{RESET}
-  StockScan lets you look up the exact price of any crypto or stock
+  StockScan lets you look up the exact price of any crypto, stock, or commodity
   at a specific date and time using OHLCV candle logic.
 
 {CYAN}How it works:{RESET}
@@ -82,6 +233,9 @@ def print_description():
     - Supports: 1s, 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M
   • Stocks: Yahoo Finance (all US & Indian stocks, NO API KEY NEEDED)
     - Supports: 1d (daily), 1wk (weekly), 1mo (monthly)
+  • Commodities: Yahoo Finance (130+ commodity ETFs, NO API KEY NEEDED)
+    - Supports: 1d (daily), 1wk (weekly), 1mo (monthly)
+    - Gold, Silver, Oil, Natural Gas, Agriculture, Metals & more!
     - Works out of the box!
 """
     print(desc)
@@ -101,11 +255,15 @@ def print_usage():
   python stockscan.py stock TSLA 2024-01-10 --timeframe 1wk
   python stockscan.py stock RELIANCE.NS 2024-01-15 --timeframe 1mo
 
-  {GREEN}# List all available crypto symbols{RESET}
-  python stockscan.py list crypto
+  {GREEN}# Get commodity price with timeframe{RESET}
+  python stockscan.py commodity GLD 2024-01-15 --timeframe 1d
+  python stockscan.py commodity USO 2024-01-10 --timeframe 1wk
+  python stockscan.py commodity CORN 2024-01-15 --timeframe 1mo
 
-  {GREEN}# List all available stock symbols{RESET}
+  {GREEN}# List all available symbols{RESET}
+  python stockscan.py list crypto
   python stockscan.py list stocks
+  python stockscan.py list commodities
 
   {GREEN}# Show help{RESET}
   python stockscan.py help
@@ -113,6 +271,7 @@ def print_usage():
 {CYAN}Supported Timeframes:{RESET}
   {BOLD}Crypto:{RESET} 1s, 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M
   {BOLD}Stocks:{RESET} 1d (daily), 1wk (weekly), 1mo (monthly)
+  {BOLD}Commodities:{RESET} 1d (daily), 1wk (weekly), 1mo (monthly)
 
 {CYAN}How it works:{RESET}
   • Uses OHLCV candle logic (industry-standard method)
@@ -121,8 +280,8 @@ def print_usage():
   • This is the standard method for historical price lookups
 
 {GREEN}✅ NO API KEYS NEEDED!{RESET}
-  Both crypto (Binance) and stocks (Yahoo Finance) work out of the box.
-  Just download and run!
+  Crypto (Binance), Stocks (Yahoo Finance), and Commodities (Yahoo Finance)
+  all work out of the box. Just download and run!
 
 {DIM}Optional: For additional stock data sources, you can set API keys:
   • Alpha Vantage: https://www.alphavantage.co/support/#api-key
@@ -220,7 +379,7 @@ def get_crypto_price(symbol: str, date_str: str, time_str: Optional[str] = None,
             data = response.json()
             
             if not data:
-                return {"error": "No data available for this time. Asset may not have existed yet."}
+                return {"error": "No data available for this time.\nThe crypto asset may not have existed yet, or data is unavailable."}
             
             # Aggregate the 1-minute candles into one
             opens = [float(candle[1]) for candle in data]
@@ -262,7 +421,7 @@ def get_crypto_price(symbol: str, date_str: str, time_str: Optional[str] = None,
             data = response.json()
             
             if not data:
-                return {"error": "No data available for this time. Asset may not have existed yet."}
+                return {"error": "No data available for this time.\nThe crypto asset may not have existed yet, or data is unavailable."}
             
             target_candle = data[0]
             
@@ -284,7 +443,7 @@ def get_crypto_price(symbol: str, date_str: str, time_str: Optional[str] = None,
             response.raise_for_status()
             data = response.json()            
             if not data:
-                return {"error": "No data available for this time. Asset may not have existed yet."}
+                return {"error": "No data available for this time.\nThe crypto asset may not have existed yet, or data is unavailable."}
             
             # Find the candle that CONTAINS the target time
             # Candle structure: [open_time, open, high, low, close, volume, close_time, ...]
@@ -484,18 +643,18 @@ def get_stock_price_yahoo(symbol: str, date_str: str, time_str: Optional[str] = 
         
         result = data["chart"]["result"]
         if not result or len(result) == 0:
-            return {"error": f"No data found for symbol {symbol}"}
+            return {"error": f"No data found for symbol {symbol}.\nThe stock/commodity may not have existed at that time, or data is unavailable."}
         
         quote = result[0]
         
         if "timestamp" not in quote or "indicators" not in quote:
-            return {"error": "Invalid data format from Yahoo Finance"}
+            return {"error": "Invalid data format from Yahoo Finance.\nThe stock/commodity may not have existed at that time, or data is unavailable."}
         
         timestamps = quote["timestamp"]
         indicators = quote["indicators"]["quote"][0]
         
         if not timestamps or not indicators:
-            return {"error": "No price data available"}
+            return {"error": "No price data available.\nThe stock/commodity may not have existed at that time, or data is unavailable."}
         
         # Find the data for our target period
         if timeframe in ["1wk", "1mo"]:
@@ -519,7 +678,7 @@ def get_stock_price_yahoo(symbol: str, date_str: str, time_str: Optional[str] = 
                     filtered_indices.append(i)
             
             if not filtered_indices:
-                return {"error": "No trading data available for the requested period"}
+                return {"error": "No trading data available for the requested period.\nThe stock/commodity may not have existed at that time, or data is unavailable."}
             
             # Aggregate only the filtered daily candles
             opens = [indicators["open"][i] for i in filtered_indices if indicators["open"][i] is not None]
@@ -529,7 +688,7 @@ def get_stock_price_yahoo(symbol: str, date_str: str, time_str: Optional[str] = 
             volumes = [indicators["volume"][i] for i in filtered_indices if indicators["volume"][i] is not None]
             
             if not opens or not closes:
-                return {"error": "Incomplete data for this period"}
+                return {"error": "Incomplete data for this period.\nThe stock/commodity may not have existed at that time, or data is unavailable."}
             
             # Create aggregated candle
             open_price = opens[0]  # First open
@@ -590,7 +749,7 @@ def get_stock_price_yahoo(symbol: str, date_str: str, time_str: Optional[str] = 
         
         # Check for None values
         if None in [open_price, high_price, low_price, close_price, volume]:
-            return {"error": f"Incomplete data for {date_str}. Market may have been closed."}
+            return {"error": f"Incomplete data for {date_str}.\nMarket may have been closed, or the stock/commodity may not have existed at that time."}
         
         # Map timeframe to display name
         timeframe_display = {
@@ -927,6 +1086,9 @@ def print_stock_result(result: Dict[str, Any]):
         note_text = f"\n{YELLOW}⚠ {result['note']}{RESET}\n"
         has_existing_warning = True
     
+    # Detect if this is a commodity
+    is_commodity = 'commodity_name' in result
+    
     # Detect currency based on symbol
     symbol = result['symbol']
     if '.NS' in symbol or '.BO' in symbol:
@@ -935,10 +1097,14 @@ def print_stock_result(result: Dict[str, Any]):
         market_name = 'Indian Stock Market'
         market_type = 'stock market'
     else:
-        # US and other stocks
+        # US and other stocks/commodities
         currency = '$'
-        market_name = result['market']
-        market_type = 'stock market'
+        if is_commodity:
+            market_name = f"Commodities (Yahoo Finance)"
+            market_type = 'commodity market'
+        else:
+            market_name = result['market']
+            market_type = 'stock market'
     
     # Calculate price change and percentage
     open_price = result['open']
@@ -983,13 +1149,25 @@ def print_stock_result(result: Dict[str, Any]):
         # Daily - show single date
         candle_date_display = f"{DIM}Candle Date:    {result['candle_start_date']}{RESET}"
     
+    # Determine header title
+    if is_commodity:
+        header_title = "STOCKSCAN - COMMODITY PRICE LOOKUP"
+        # Add commodity name if available
+        if 'commodity_name' in result:
+            commodity_info = f"{CYAN}COMMODITY:{RESET}      {result['commodity_name']}\n"
+        else:
+            commodity_info = ""
+    else:
+        header_title = "STOCKSCAN - STOCK PRICE LOOKUP"
+        commodity_info = ""
+    
     output = f"""
 {PURPLE}{'─' * 70}{RESET}
-{BOLD}{BRIGHT_PURPLE}STOCKSCAN - STOCK PRICE LOOKUP{RESET}
+{BOLD}{BRIGHT_PURPLE}{header_title}{RESET}
 {PURPLE}{'─' * 70}{RESET}
 
 {CYAN}ASSET:{RESET}           {result['symbol']}
-{CYAN}MARKET:{RESET}          {market_name}
+{commodity_info}{CYAN}MARKET:{RESET}          {market_name}
 {CYAN}REQUESTED DATE:{RESET}  {result['requested_date']}
 {CYAN}TIMEFRAME:{RESET}       {result['timeframe']}
 
@@ -1024,18 +1202,19 @@ def interactive_mode():
         # Ask which market
         print(f"\n{CYAN}{'─' * 70}{RESET}")
         print(f"{BOLD}{BRIGHT_PURPLE}Which market do you want to check?{RESET}\n")
-        print(f"  {GREEN}[1]{RESET} Stocks  (AAPL, TSLA, MSFT, etc.)")
-        print(f"  {GREEN}[2]{RESET} Crypto  (BTCUSDT, ETHUSDT, etc.)")
+        print(f"  {GREEN}[1]{RESET} Stocks       (AAPL, TSLA, MSFT, etc.)")
+        print(f"  {GREEN}[2]{RESET} Crypto       (BTCUSDT, ETHUSDT, etc.)")
+        print(f"  {GREEN}[3]{RESET} Commodities  (GLD, USO, CORN, etc.)")
         print(f"  {YELLOW}[Q]{RESET} Quit\n")
         
-        choice = input(f"{CYAN}Enter your choice (1/2/Q):{RESET} ").strip().upper()
+        choice = input(f"{CYAN}Enter your choice (1/2/3/Q):{RESET} ").strip().upper()
         
         if choice == 'Q':
             print(f"\n{PURPLE}Thanks for using StockScan! Goodbye! 👋{RESET}\n")
             break
         
-        if choice not in ['1', '2']:
-            print(f"\n{RED}⚠ Invalid choice! Please enter 1 for Stocks, 2 for Crypto, or Q to quit.{RESET}")
+        if choice not in ['1', '2', '3']:
+            print(f"\n{RED}⚠ Invalid choice! Please enter 1 for Stocks, 2 for Crypto, 3 for Commodities, or Q to quit.{RESET}")
             continue
         
         # Show syntax based on choice
@@ -1110,7 +1289,7 @@ def interactive_mode():
                 if continue_choice == 'back':
                     break
         
-        else:  # choice == '2'
+        elif choice == '2':
             # Crypto mode
             print(f"\n{CYAN}{'─' * 70}{RESET}")
             print(f"{BOLD}{BRIGHT_PURPLE}CRYPTO PRICE LOOKUP{RESET}\n")
@@ -1263,6 +1442,127 @@ def interactive_mode():
                 continue_choice = input().strip().lower()
                 if continue_choice == 'back':
                     break
+        
+        elif choice == '3':
+            # Commodity mode
+            print(f"\n{CYAN}{'─' * 70}{RESET}")
+            print(f"{BOLD}{BRIGHT_PURPLE}COMMODITY PRICE LOOKUP{RESET}\n")
+            print(f"{CYAN}Syntax:{RESET} {GREEN}<SYMBOL> <DATE> [TIMEFRAME]{RESET}")
+            print(f"{CYAN}Examples:{RESET}")
+            print(f"  GLD 2026-01-15      {DIM}(Gold - Will ask for timeframe){RESET}")
+            print(f"  USO 2026-01-15 1d   {DIM}(Oil - Direct with timeframe){RESET}")
+            print(f"  CORN 2024-12-20 1wk {DIM}(Corn - Weekly candle){RESET}\n")
+            print(f"{DIM}Date format: YYYY-MM-DD{RESET}")
+            print(f"{DIM}Type 'list' to see all available commodities{RESET}")
+            print(f"{DIM}Type 'back' to return to market selection{RESET}\n")
+            
+            while True:
+                user_input = input(f"{CYAN}Enter commodity lookup:{RESET} ").strip()
+                
+                if user_input.lower() == 'back':
+                    break
+                
+                if user_input.lower() == 'list':
+                    # Show list of available commodities
+                    print(f"\n{CYAN}{'─' * 70}{RESET}")
+                    print(f"{BOLD}{BRIGHT_PURPLE}AVAILABLE COMMODITY ETFs ({len(COMMODITY_ETFS)} total){RESET}\n")
+                    
+                    # Group by category
+                    categories = {
+                        "Precious Metals - Gold": ["GLD", "IAU", "GLDM", "SGOL", "BAR", "AAAU", "OUNZ", "GLDL", "IAUM"],
+                        "Precious Metals - Silver": ["SLV", "SIVR", "PSLV", "SLVP"],
+                        "Precious Metals - Platinum & Palladium": ["PPLT", "PALL", "PLTM"],
+                        "Energy - Crude Oil": ["USO", "UCO", "DBO", "USL", "BNO", "OILK", "OLEM"],
+                        "Energy - Natural Gas": ["UNG", "BOIL", "KOLD", "UNL", "GAZ", "GASL", "GASX"],
+                        "Energy - Gasoline & Heating Oil": ["UGA", "UHN"],
+                        "Agriculture - Grains": ["CORN", "WEAT", "SOYB", "OATS", "RICE"],
+                        "Agriculture - Soft Commodities": ["JO", "NIB", "SGG", "BAL", "CANE"],
+                        "Agriculture - Livestock": ["COW"],
+                        "Industrial Metals - Copper": ["CPER", "JJC", "COPX"],
+                        "Industrial Metals - Aluminum": ["JJU"],
+                        "Broad Commodity Baskets": ["DBC", "PDBC", "GSG", "USCI", "GCC", "RJI", "COMT", "CMDY"],
+                        "Uranium & Nuclear": ["URA", "URNM", "NLR", "HURA"],
+                    }
+                    
+                    for category, symbols in categories.items():
+                        print(f"{YELLOW}{category}:{RESET}")
+                        for sym in symbols:
+                            if sym in COMMODITY_ETFS:
+                                print(f"  {GREEN}{sym:6}{RESET} - {COMMODITY_ETFS[sym]}")
+                        print()
+                    
+                    print(f"{DIM}Press Enter to continue...{RESET}")
+                    input()
+                    continue
+                
+                if not user_input:
+                    print(f"{RED}⚠ Please enter something!{RESET}")
+                    continue
+                
+                parts = user_input.split()
+                
+                if len(parts) < 2:
+                    print(f"{RED}⚠ Invalid syntax! Use: <SYMBOL> <DATE> [TIMEFRAME]{RESET}")
+                    print(f"{YELLOW}Example: GLD 2026-01-15{RESET}")
+                    continue
+                
+                symbol = parts[0].upper()
+                date = parts[1]
+                
+                # Validate if symbol is a known commodity ETF
+                if symbol not in COMMODITY_ETFS:
+                    print(f"{YELLOW}⚠ Warning: '{symbol}' is not in our commodity ETF list.{RESET}")
+                    print(f"{DIM}Type 'list' to see all available commodities, or continue anyway.{RESET}")
+                    confirm = input(f"{CYAN}Continue with {symbol}? (y/n):{RESET} ").strip().lower()
+                    if confirm != 'y':
+                        continue
+                
+                # Check if timeframe was provided
+                timeframe = None
+                valid_timeframes = ['1d', '1wk', '1mo']
+                if len(parts) > 2 and parts[2] in valid_timeframes:
+                    timeframe = parts[2]
+                
+                # If no timeframe provided, ask user to select
+                if timeframe is None:
+                    print(f"\n{CYAN}{'─' * 50}{RESET}")
+                    print(f"{BOLD}{BRIGHT_PURPLE}SELECT TIMEFRAME{RESET}\n")
+                    print(f"{CYAN}Available timeframes:{RESET}")
+                    print(f"  {GREEN}[1]{RESET}  1d   - Daily")
+                    print(f"  {GREEN}[2]{RESET}  1wk  - Weekly")
+                    print(f"  {GREEN}[3]{RESET}  1mo  - Monthly\n")
+                    
+                    timeframe_map = {
+                        '1': '1d',
+                        '2': '1wk',
+                        '3': '1mo'
+                    }
+                    
+                    while True:
+                        tf_choice = input(f"{CYAN}Select timeframe (1-3):{RESET} ").strip()
+                        
+                        if tf_choice in timeframe_map:
+                            timeframe = timeframe_map[tf_choice]
+                            break
+                        else:
+                            print(f"{RED}⚠ Invalid choice! Please enter a number between 1 and 3{RESET}")
+                
+                # Use stock price function (commodities are ETFs traded as stocks)
+                result = get_stock_price(symbol, date, None, timeframe)
+                
+                # Add commodity name to result if available
+                if symbol in COMMODITY_ETFS:
+                    result['commodity_name'] = COMMODITY_ETFS[symbol]
+                
+                print_stock_result(result)
+                
+                # Ask if they want to check another
+                print(f"\n{DIM}Press Enter to check another commodity, or type 'back' to change market{RESET}")
+                continue_choice = input().strip().lower()
+                if continue_choice == 'back':
+                    break
+
+
 def main():
     """Main entry point"""
     # If no arguments, start interactive mode
@@ -1297,9 +1597,18 @@ def main():
                               default='1d',
                               help='Candle timeframe (default: 1d)')
     
+    # Commodity command
+    commodity_parser = subparsers.add_parser('commodity', help='Get commodity price')
+    commodity_parser.add_argument('symbol', help='Commodity ETF symbol (e.g., GLD, USO)')
+    commodity_parser.add_argument('date', help='Date (YYYY-MM-DD)')
+    commodity_parser.add_argument('--timeframe', '-t',
+                              choices=['1d', '1wk', '1mo'],
+                              default='1d',
+                              help='Candle timeframe (default: 1d)')
+    
     # List command
     list_parser = subparsers.add_parser('list', help='List symbols')
-    list_parser.add_argument('market', choices=['crypto', 'stocks'], help='Market to list')
+    list_parser.add_argument('market', choices=['crypto', 'stocks', 'commodities'], help='Market to list')
     
     # Help command
     subparsers.add_parser('help', help='Show help')
@@ -1322,6 +1631,14 @@ def main():
             result = get_stock_price(args.symbol, args.date, None, timeframe)
             print_stock_result(result)
         
+        elif args.command == 'commodity':
+            timeframe = getattr(args, 'timeframe', '1d')
+            result = get_stock_price(args.symbol, args.date, None, timeframe)
+            # Add commodity name if available
+            if args.symbol.upper() in COMMODITY_ETFS:
+                result['commodity_name'] = COMMODITY_ETFS[args.symbol.upper()]
+            print_stock_result(result)
+        
         elif args.command == 'list':
             if args.market == 'crypto':
                 print(f"\n{CYAN}Available Crypto Symbols (first 50):{RESET}\n")
@@ -1336,6 +1653,33 @@ def main():
                 for i, symbol in enumerate(symbols, 1):
                     print(f"  {i:2d}. {symbol}")
                 print(f"\n{DIM}Total: {len(symbols)} symbols shown{RESET}\n")
+            
+            elif args.market == 'commodities':
+                print(f"\n{CYAN}Available Commodity ETFs ({len(COMMODITY_ETFS)} total):{RESET}\n")
+                # Group by category
+                categories = {
+                    "Precious Metals - Gold": ["GLD", "IAU", "GLDM", "SGOL", "BAR", "AAAU", "OUNZ", "GLDL", "IAUM"],
+                    "Precious Metals - Silver": ["SLV", "SIVR", "PSLV", "SLVP"],
+                    "Precious Metals - Platinum & Palladium": ["PPLT", "PALL", "PLTM"],
+                    "Energy - Crude Oil": ["USO", "UCO", "DBO", "USL", "BNO", "OILK", "OLEM"],
+                    "Energy - Natural Gas": ["UNG", "BOIL", "KOLD", "UNL", "GAZ", "GASL", "GASX"],
+                    "Energy - Gasoline & Heating Oil": ["UGA", "UHN"],
+                    "Agriculture - Grains": ["CORN", "WEAT", "SOYB", "OATS", "RICE"],
+                    "Agriculture - Soft Commodities": ["JO", "NIB", "SGG", "BAL", "CANE"],
+                    "Agriculture - Livestock": ["COW"],
+                    "Industrial Metals - Copper": ["CPER", "JJC", "COPX"],
+                    "Industrial Metals - Aluminum": ["JJU"],
+                    "Broad Commodity Baskets": ["DBC", "PDBC", "GSG", "USCI", "GCC", "RJI", "COMT", "CMDY"],
+                    "Uranium & Nuclear": ["URA", "URNM", "NLR", "HURA"],
+                }
+                
+                for category, symbols in categories.items():
+                    print(f"{YELLOW}{category}:{RESET}")
+                    for sym in symbols:
+                        if sym in COMMODITY_ETFS:
+                            print(f"  {GREEN}{sym:6}{RESET} - {COMMODITY_ETFS[sym]}")
+                    print()
+                print(f"{DIM}Total: {len(COMMODITY_ETFS)} commodity ETFs available{RESET}\n")
     
     except SystemExit:
         # argparse calls sys.exit on error, catch it
