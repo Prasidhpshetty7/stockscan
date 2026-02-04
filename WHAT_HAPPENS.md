@@ -48,11 +48,11 @@ python stockscan/stockscan.py
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 
                        Market Price Lookup Tool
-                   Get crypto & stock prices at any time
+                Get crypto, stock & commodity prices at any time
 
 
 What is StockScan?
-  StockScan lets you look up the exact price of any crypto or stock
+  StockScan lets you look up the exact price of any crypto, stock, or commodity
   at a specific date and time using OHLCV candle logic.
 
 How it works:
@@ -65,6 +65,8 @@ Data Sources:
   • Crypto: Binance (1000+ coins, NO API KEY NEEDED)
     - Supports: 16 timeframes from 1s to 1M
   • Stocks: Yahoo Finance (all US & Indian stocks, NO API KEY NEEDED)
+    - Supports: 1d (daily), 1wk (weekly), 1mo (monthly)
+  • Commodities: Yahoo Finance (98+ commodity ETFs, NO API KEY NEEDED)
     - Supports: 1d (daily), 1wk (weekly), 1mo (monthly)
     - Works out of the box!
 ```
@@ -79,16 +81,18 @@ You'll see this question:
 ──────────────────────────────────────────────────────────────────────
 Which market do you want to check?
 
-  [1] Stocks  (AAPL, TSLA, MSFT, etc.)
-  [2] Crypto  (BTCUSDT, ETHUSDT, etc.)
+  [1] Stocks       (AAPL, TSLA, MSFT, etc.)
+  [2] Crypto       (BTCUSDT, ETHUSDT, etc.)
+  [3] Commodities  (GLD, USO, CORN, etc.)
   [Q] Quit
 
-Enter your choice (1/2/Q): _
+Enter your choice (1/2/3/Q): _
 ```
 
 **What to do:**
 - Type `1` and press Enter → Go to Stocks
-- Type `2` and press Enter → Go to Crypto  
+- Type `2` and press Enter → Go to Crypto
+- Type `3` and press Enter → Go to Commodities
 - Type `Q` and press Enter → Exit the program
 
 ---
@@ -470,17 +474,196 @@ This will:
 
 **What to do next:**
 - Press Enter → Check another crypto
-- Type `back` → Go back to market selection (choose stocks or quit)
+- Type `back` → Go back to market selection (choose stocks, commodities, or quit)
+
+---
+
+## Path C: If You Chose Commodities (Pressed 3)
+
+You'll see:
+
+```
+──────────────────────────────────────────────────────────────────────
+COMMODITY PRICE LOOKUP
+
+Syntax: <SYMBOL> <DATE>
+Examples:
+  GLD 2026-01-15   (Gold)
+  USO 2024-12-20   (Crude Oil)
+  CORN 2025-06-10  (Corn)
+
+Date format: YYYY-MM-DD
+Type 'list' to see all available commodities
+Type 'back' to return to market selection
+
+Enter commodity lookup: _
+```
+
+**Example: Let's check Gold commodity**
+
+Type: `GLD 2026-01-15` and press Enter
+
+---
+
+### Step 1: Select Timeframe
+
+You'll see a timeframe selector:
+
+```
+──────────────────────────────────────────────────
+SELECT TIMEFRAME
+
+Available timeframes:
+  [1]  1d   - Daily
+  [2]  1wk  - Weekly
+  [3]  1mo  - Monthly
+
+Select timeframe (1-3): _
+```
+
+**Let's choose `2` for weekly**
+
+---
+
+### Step 2: See the Result
+
+You'll see:
+
+```
+──────────────────────────────────────────────────────────────────────
+STOCKSCAN - COMMODITY PRICE LOOKUP
+──────────────────────────────────────────────────────────────────────
+
+ASSET:           GLD
+COMMODITY:       SPDR Gold Trust
+MARKET:          Commodities (Yahoo Finance)
+REQUESTED DATE:  2024-01-15
+TIMEFRAME:       Weekly
+
+Candle Period:  2024-01-15 → 2024-01-21    👈 Full 7-day period
+ℹ Note: This period has only 4 trading day(s) out of the full weekly timeframe.
+   3 day(s) excluded due to weekends/holidays. Check dates beyond this period for continued data.
+
+CANDLE DATA:
+  Open:   $192.50
+  High:   $195.80
+  Low:    $191.20
+  Close:  $194.75  ← Price at end of period    👈 THIS IS THE ANSWER!
+  Volume: 8,234,500
+
+PRICE MOVEMENT:
+  Change:     +$2.25                       👈 Price went up
+  Percentage: +1.17%                       👈 Gained 1.17%
+
+Note: This uses OHLCV candle logic. The CLOSE price of the candle
+      for your requested period is shown as the price.
+      Price movement shows the change from Open to Close.
+
+──────────────────────────────────────────────────────────────────────
+
+Press Enter to check another commodity, or type 'back' to change market
+```
+
+---
+
+### Example: Daily Timeframe
+
+**Or choose `1` for daily:**
+
+```
+──────────────────────────────────────────────────────────────────────
+STOCKSCAN - COMMODITY PRICE LOOKUP
+──────────────────────────────────────────────────────────────────────
+
+ASSET:           USO
+COMMODITY:       United States Oil Fund
+MARKET:          Commodities (Yahoo Finance)
+REQUESTED DATE:  2026-01-15
+TIMEFRAME:       Daily
+
+Candle Date:    2026-01-15
+
+CANDLE DATA:
+  Open:   $72.45
+  High:   $73.20
+  Low:    $71.80
+  Close:  $72.95  ← Price at that date    👈 THIS IS THE ANSWER!
+  Volume: 5,678,900
+
+PRICE MOVEMENT:
+  Change:     +$0.50                       👈 Price went up
+  Percentage: +0.69%                       👈 Gained 0.69%
+
+Note: This uses OHLCV candle logic. The CLOSE price of the daily
+      candle for your requested date is shown as the price.
+      Price movement shows the change from Open to Close.
+
+──────────────────────────────────────────────────────────────────────
+
+Press Enter to check another commodity, or type 'back' to change market
+```
+
+---
+
+### Viewing All Available Commodities
+
+**Type `list` to see all 98+ commodity ETFs:**
+
+```
+──────────────────────────────────────────────────────────────────────
+AVAILABLE COMMODITIES (98 total)
+
+PRECIOUS METALS:
+  GLD    - SPDR Gold Trust
+  IAU    - iShares Gold Trust
+  SLV    - iShares Silver Trust
+  PPLT   - Aberdeen Standard Physical Platinum Shares ETF
+  PALL   - Aberdeen Standard Physical Palladium Shares ETF
+
+ENERGY:
+  USO    - United States Oil Fund
+  UNG    - United States Natural Gas Fund
+  BNO    - United States Brent Oil Fund
+  UGA    - United States Gasoline Fund
+  UHN    - United States Heating Oil Fund
+
+AGRICULTURE - GRAINS:
+  CORN   - Teucrium Corn Fund
+  WEAT   - Teucrium Wheat Fund
+  SOYB   - Teucrium Soybean Fund
+  ...and 85 more
+
+Type a commodity symbol to check its price
+──────────────────────────────────────────────────────────────────────
+```
+
+---
+
+### Advanced Usage (Optional)
+
+**For advanced users:** You can skip the interactive prompt by providing the timeframe directly:
+
+```
+GLD 2026-01-15 1wk
+```
+
+This will skip the timeframe selection and show the result directly.
+
+---
+
+**What to do next:**
+- Press Enter → Check another commodity
+- Type `back` → Go back to market selection (choose stocks, crypto, or quit)
 
 ---
 
 ## What If You Make a Mistake?
 
 ### Wrong Market Choice
-If you type `5` instead of `1` or `2`:
+If you type `5` instead of `1`, `2`, or `3`:
 
 ```
-⚠ Invalid choice! Please enter 1 for Stocks, 2 for Crypto, or Q to quit.
+⚠ Invalid choice! Please enter 1 for Stocks, 2 for Crypto, 3 for Commodities, or Q to quit.
 ```
 
 Then it asks you again!
@@ -505,6 +688,16 @@ Example: BTCUSDT 2026-01-15
 
 Then it asks you again!
 
+### Wrong Commodity Format
+If you type just `GOLD`:
+
+```
+⚠ Invalid syntax! Use: <SYMBOL> <DATE>
+Example: GLD 2026-01-15
+```
+
+Then it asks you again!
+
 ---
 
 ## Complete Flow Diagram
@@ -518,7 +711,7 @@ Then it asks you again!
    ↓
 4. See STOCKSCAN banner + info
    ↓
-5. Choose market: [1] Stocks  [2] Crypto  [Q] Quit
+5. Choose market: [1] Stocks  [2] Crypto  [3] Commodities  [Q] Quit
    ↓
    ├─→ Press 1 → Stock mode
    │   ↓
@@ -548,6 +741,16 @@ Then it asks you again!
    │   ↓
    │   Press Enter (check another) or type 'back'
    │
+   ├─→ Press 3 → Commodity mode
+   │   ↓
+   │   Enter: GLD 2026-01-15 (or type 'list' to see all commodities)
+   │   ↓
+   │   Select timeframe: [1] 1d  [2] 1wk  [3] 1mo
+   │   ↓
+   │   See price: $194.75
+   │   ↓
+   │   Press Enter (check another) or type 'back'
+   │
    └─→ Press Q → Exit program
 ```
 
@@ -559,15 +762,18 @@ Then it asks you again!
 
 1. Navigate: `cd stockscan`
 2. Run: `python stockscan.py` (or `py stockscan.py`)
-3. Press `1` or `2`
+3. Press `1`, `2`, or `3`
 4. Type your lookup (just symbol and date)
 5. Select timeframe from the menu
 6. For crypto intraday: Enter custom start time (e.g., 14:39)
 7. Get the price with EXACT timing!
 
 **Key Features:**
+- **3 Markets**: Stocks, Crypto, and Commodities (98+ commodity ETFs)
 - **Custom Start Time**: For crypto intraday timeframes, you can start at ANY time (14:39, not just 14:00)
 - **Midnight Crossing Detection**: Automatically shows time split across two dates
+- **Full Period Display**: Weekly/monthly shows complete calendar periods with trading day notifications
+- **Error Handling**: Clear messages for future dates, non-existent assets, and incomplete data
 - **Interactive Prompts**: Tool guides you step-by-step
 - **Advanced Usage**: Can still provide everything at once if you prefer
 

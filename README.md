@@ -1,6 +1,6 @@
 # 📈 StockScan
 
-**Get the exact price of any crypto or stock at any point in time - instantly!**
+**Get the exact price of any crypto, stock, or commodity at any point in time - instantly!**
 
 No API keys. No registration. Just download and run.
 
@@ -10,8 +10,9 @@ No API keys. No registration. Just download and run.
 
 StockScan answers one simple question: **"What was the price at this exact time?"**
 
-- 📊 **Stocks**: Check any US stock (AAPL, TSLA, MSFT, etc.)
+- 📊 **Stocks**: Check any US or Indian stock (AAPL, TSLA, RELIANCE.NS, etc.)
 - 💰 **Crypto**: Check any Binance coin (BTC, ETH, BNB, etc.)
+- 🏆 **Commodities**: Check 98+ commodity ETFs (Gold, Oil, Corn, etc.)
 - 🕐 **Any Time**: Historical prices from any date/time
 - 🎨 **Beautiful Output**: Clean, colorful terminal display
 
@@ -74,8 +75,8 @@ py stockscan.py
 
 You'll see:
 1. ✨ Big purple STOCKSCAN banner
-2. 📋 Choose: `[1] Stocks` or `[2] Crypto`
-3. 📝 Enter your lookup (e.g., `AAPL 2026-01-15` or `BTCUSDT 2026-01-15`)
+2. 📋 Choose: `[1] Stocks` or `[2] Crypto` or `[3] Commodities`
+3. 📝 Enter your lookup (e.g., `AAPL 2026-01-15` or `BTCUSDT 2026-01-15` or `GLD 2026-01-15`)
 4. 🕐 Select timeframe (interactive prompt)
 5. ⏰ For crypto intraday: Enter custom start time (e.g., 14:39)
 6. 💵 Get the price instantly!
@@ -99,6 +100,13 @@ python stockscan.py stock RELIANCE.NS 2024-01-15 --timeframe 1mo
 python stockscan.py crypto BTCUSDT 2026-01-15 14:30 --timeframe 1h
 python stockscan.py crypto ETHUSDT 2026-01-15 10:00 --timeframe 5m
 python stockscan.py crypto BTCUSDT 2026-01-15 23:59 --timeframe 3m
+```
+
+**Commodities:**
+```bash
+python stockscan.py commodity GLD 2026-01-15 --timeframe 1d
+python stockscan.py commodity USO 2024-12-20 --timeframe 1wk
+python stockscan.py commodity CORN 2024-01-15 --timeframe 1mo
 ```
 
 **Note:** For crypto intraday timeframes (under 1d), you can specify ANY start time (HH:MM format). The tool will create a custom period starting from that exact time!
@@ -168,6 +176,40 @@ PRICE MOVEMENT:
 
 Note: This uses OHLCV candle logic. The CLOSE price of the daily
       candle for your requested date is shown as the price.
+      Price movement shows the change from Open to Close.
+
+──────────────────────────────────────────────────────────────────────
+```
+
+### Commodity Weekly Lookup
+```
+──────────────────────────────────────────────────────────────────────
+STOCKSCAN - COMMODITY PRICE LOOKUP
+──────────────────────────────────────────────────────────────────────
+
+ASSET:           GLD
+COMMODITY:      SPDR Gold Shares
+MARKET:          Commodities (Yahoo Finance)
+REQUESTED DATE:  2024-01-15
+TIMEFRAME:       Weekly
+
+Candle Period:  2024-01-15 → 2024-01-21
+ℹ Note: This period has only 4 trading day(s) out of the full weekly timeframe.
+   3 day(s) excluded due to weekends/holidays. Check dates beyond this period for continued data.
+
+CANDLE DATA:
+  Open:   $189.15
+  High:   $189.26
+  Low:    $185.45
+  Close:  $187.93  ← Price at that date
+  Volume: 25,596,200
+
+PRICE MOVEMENT:
+  Change:     $1.22
+  Percentage: -0.64%
+
+Note: This uses OHLCV candle logic. The CLOSE price of the candle
+      for your requested period is shown as the price.
       Price movement shows the change from Open to Close.
 
 ──────────────────────────────────────────────────────────────────────
@@ -280,7 +322,8 @@ Note: This uses OHLCV candle logic. The CLOSE price of the candle
 ✅ **No API Keys Required** - Works immediately after download  
 ✅ **1000+ Cryptocurrencies** - All Binance spot pairs  
 ✅ **All US & Indian Stocks** - NYSE, NASDAQ, AMEX, NSE, BSE  
-✅ **Multiple Timeframes** - Crypto: 16 timeframes (1s to 1M) | Stocks: 3 timeframes (1d, 1wk, 1mo)  
+✅ **98+ Commodity ETFs** - Gold, Silver, Oil, Natural Gas, Agriculture, Metals & more  
+✅ **Multiple Timeframes** - Crypto: 16 timeframes (1s to 1M) | Stocks & Commodities: 3 timeframes (1d, 1wk, 1mo)  
 ✅ **Custom Start Time** - For crypto intraday: Start from ANY time (14:39, 23:59, etc.) with perfect precision  
 ✅ **Midnight Crossing Detection** - Automatically detects and shows time split across dates  
 ✅ **Historical Data** - Check any past date with full history  
@@ -313,6 +356,7 @@ StockScan uses **OHLCV candle logic** (the industry-standard method):
 **Data Sources:**
 - **Crypto**: Binance Public API (no key needed) - 16 timeframes available
 - **Stocks**: Yahoo Finance API (no key needed) - 3 timeframes available
+- **Commodities**: Yahoo Finance API (no key needed) - 3 timeframes available
 
 ---
 
@@ -356,6 +400,27 @@ python stockscan.py crypto BTCUSDT 2026-01-15 14:30 --timeframe 1h
 python stockscan.py crypto ETHUSDT 2026-01-15 10:00 --timeframe 5m
 # Output: $3,302.39 (Close price)
 # Change: +$2.23 (+0.07%)
+```
+
+### Check Gold Price (Commodity)
+```bash
+python stockscan.py commodity GLD 2024-01-15 --timeframe 1d
+# Output: $189.71 (Close price)
+# Change: -$0.96 (-0.50%)
+```
+
+### Check Oil Price (Commodity - Weekly)
+```bash
+python stockscan.py commodity USO 2024-01-01 --timeframe 1wk
+# Output: $72.81 (Close price)
+# Change: +$5.25 (+7.77%)
+```
+
+### Check Corn Price (Commodity - Monthly)
+```bash
+python stockscan.py commodity CORN 2024-01-01 --timeframe 1mo
+# Output: $20.61 (Close price)
+# Change: -$0.44 (-2.09%)
 ```
 
 **Windows users:** Replace `python` with `py` if the above doesn't work
@@ -419,6 +484,50 @@ python stockscan.py crypto ETHUSDT 2026-01-15 10:00 --timeframe 5m
 2. Search for your coin
 3. Use the trading pair (usually ends with USDT)
 4. Example: Bitcoin → BTC/USDT → Use `BTCUSDT`
+
+### 🏆 Commodities
+
+**Format:** Commodity ETF symbol (e.g., `GLD`, `USO`, `CORN`)
+- 98+ commodity ETFs available
+- Track prices of Gold, Silver, Oil, Natural Gas, Agriculture, Metals & more
+- Find all symbols: Run `python stockscan.py list commodities`
+
+**Popular Commodity ETFs:**
+
+**Precious Metals:**
+- GLD (SPDR Gold Shares)
+- IAU (iShares Gold Trust)
+- SLV (iShares Silver Trust)
+- PPLT (abrdn Physical Platinum Shares)
+- PALL (abrdn Physical Palladium Shares)
+
+**Energy:**
+- USO (United States Oil Fund)
+- UNG (United States Natural Gas Fund)
+- UCO (ProShares Ultra Bloomberg Crude Oil)
+- UGA (United States Gasoline Fund)
+
+**Agriculture:**
+- CORN (Teucrium Corn Fund)
+- WEAT (Teucrium Wheat Fund)
+- SOYB (Teucrium Soybean Fund)
+- DBA (Invesco DB Agriculture Fund)
+
+**Industrial Metals:**
+- CPER (United States Copper Index Fund)
+- JJU (iPath Series B Bloomberg Aluminum)
+
+**Broad Baskets:**
+- DBC (Invesco DB Commodity Index Tracking Fund)
+- PDBC (Invesco Optimum Yield Diversified Commodity)
+- GSG (iShares S&P GSCI Commodity-Indexed Trust)
+
+**How to find commodity symbols:**
+1. Run: `python stockscan.py list commodities`
+2. Browse 98+ commodity ETFs organized by category
+3. Use the symbol shown (e.g., GLD, USO, CORN)
+
+**Note:** Commodities use the same timeframes as stocks (1d, 1wk, 1mo) with full historical data.
 
 ---
 
@@ -524,6 +633,13 @@ python stockscan.py crypto ETHUSDT 2026-01-15 10:00 --timeframe 5m
 - `1mo` - Monthly candles (full history)
 
 *All timeframes support full historical data - no limitations!*
+
+### Commodities (Yahoo Finance) - 3 Timeframes
+- `1d` - Daily candles (full history)
+- `1wk` - Weekly candles (full history)
+- `1mo` - Monthly candles (full history)
+
+*Same as stocks - full historical data with no limitations!*
 
 ---
 

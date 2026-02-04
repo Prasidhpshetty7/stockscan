@@ -62,6 +62,7 @@ py stockscan.py
 2. It asks: "Which market do you want to check?"
    - Press `1` for Stocks
    - Press `2` for Crypto
+   - Press `3` for Commodities
    - Press `Q` to quit
 
 3. After choosing, it shows you examples of how to enter data
@@ -95,6 +96,13 @@ python stockscan.py crypto ETHUSDT 2026-01-15 10:00 --timeframe 5m
 python stockscan.py crypto BNBUSDT 2026-01-10 --timeframe 1d
 ```
 
+**For Commodities:**
+```bash
+python stockscan.py commodity GLD 2026-01-15 --timeframe 1d
+python stockscan.py commodity USO 2024-12-20 --timeframe 1wk
+python stockscan.py commodity CORN 2024-01-15 --timeframe 1mo
+```
+
 **Windows users:** Replace `python` with `py` if needed
 
 **Timeframe options for crypto (16 total):**
@@ -121,6 +129,13 @@ python stockscan.py crypto BNBUSDT 2026-01-10 --timeframe 1d
 - `1d` = Daily (full history)
 - `1wk` = Weekly (full history)
 - `1mo` = Monthly (full history)
+
+**Timeframe options for commodities:**
+- `1d` = Daily (full history)
+- `1wk` = Weekly (full history)
+- `1mo` = Monthly (full history)
+
+*Commodities use the same timeframes as stocks - daily and above only*
 
 ---
 
@@ -264,6 +279,16 @@ PRICE MOVEMENT:
 7. Enter start time: `23:59`
 8. See the split: 1 min from Jan 2, 2 mins from Jan 3
 
+### Example 5: Check Gold Commodity Price (Weekly)
+
+1. Open terminal
+2. Navigate to folder: `cd stockscan`
+3. Run: `python stockscan.py` (or `py stockscan.py` on Windows)
+4. Press `3` (for Commodities)
+5. Type: `GLD 2024-01-15`
+6. Select timeframe: `2` (Weekly)
+7. See the period: Jan 15 → Jan 21 with full commodity data
+
 ---
 
 ## Common Questions
@@ -272,16 +297,22 @@ PRICE MOVEMENT:
 A: NO! Everything works out of the box. No registration, no API keys needed.
 
 **Q: What stocks can I check?**
-A: All US stocks (AAPL, TSLA, MSFT, GOOGL, AMZN, etc.)
+A: All US stocks (AAPL, TSLA, MSFT, GOOGL, AMZN, etc.) and Indian stocks (RELIANCE.NS, TCS.NS, etc.)
 
 **Q: What crypto can I check?**
 A: All Binance spot pairs (BTCUSDT, ETHUSDT, BNBUSDT, etc.)
+
+**Q: What commodities can I check?**
+A: 98+ commodity ETFs including Gold (GLD), Oil (USO), Silver (SLV), Natural Gas (UNG), Corn (CORN), Wheat (WEAT), and many more
 
 **Q: Can I check old prices?**
 A: Yes! You can check any historical date when the asset existed.
 
 **Q: Can I check future prices?**
-A: No, it will show an error: "Future price data does not exist."
+A: No, it will show an error: "Future price data does not exist. The requested date is in the future."
+
+**Q: What if the asset didn't exist at that time?**
+A: You'll see: "No data available for [SYMBOL] on [DATE]. The stock/commodity may not have existed at that time, or data is unavailable for this date range."
 
 **Q: What if I make a mistake?**
 A: The tool will show you a warning and ask you to try again with the correct format.
