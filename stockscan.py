@@ -316,7 +316,7 @@ def get_crypto_price(symbol: str, date_str: str, time_str: Optional[str] = None,
         
         # Check if future
         if dt > datetime.now():
-            return {"error": "Future price data does not exist."}
+            return {"error": "Future price data does not exist.\nThe requested date is in the future. Please choose a date in the past."}
         
         # For weekly/monthly timeframes, check if the period has completed
         if timeframe in ["1w", "1M"]:
@@ -553,7 +553,8 @@ def get_stock_price(symbol: str, date_str: str, time_str: Optional[str] = None, 
         "No data found",
         "No trading data",
         "Incomplete data",
-        "No price data"
+        "No price data",
+        "Future price data"
     ]):
         return result
     
@@ -574,7 +575,7 @@ def get_stock_price_yahoo(symbol: str, date_str: str, time_str: Optional[str] = 
         
         # Check if future
         if dt > datetime.now():
-            return {"error": "Future price data does not exist."}
+            return {"error": "Future price data does not exist.\nThe requested date is in the future. Please choose a date in the past."}
         
         # For weekly/monthly timeframes, check if the period has completed
         if timeframe in ["1wk", "1mo"]:
@@ -807,7 +808,7 @@ def get_stock_price_alphavantage(symbol: str, date_str: str, time_str: Optional[
         
         # Check if future
         if dt > datetime.now():
-            return {"error": "Future price data does not exist."}
+            return {"error": "Future price data does not exist.\nThe requested date is in the future. Please choose a date in the past."}
         
         # Fetch daily time series
         url = ALPHAVANTAGE_BASE
@@ -893,7 +894,7 @@ def get_stock_price_finnhub(symbol: str, date_str: str, time_str: Optional[str] 
         
         # Check if future
         if dt > datetime.now():
-            return {"error": "Future price data does not exist."}
+            return {"error": "Future price data does not exist.\nThe requested date is in the future. Please choose a date in the past."}
         
         # Convert to unix timestamp (start of day)
         timestamp = int(dt.timestamp())
