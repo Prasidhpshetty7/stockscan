@@ -545,14 +545,21 @@ def get_stock_price(symbol: str, date_str: str, time_str: Optional[str] = None, 
     if "error" not in result:
         return result
     
-    # If it's a validation error (future period), pass it through
-    if "has not completed yet" in result["error"]:
+    # Pass through specific error messages
+    error_msg = result["error"]
+    if any(phrase in error_msg for phrase in [
+        "has not completed yet",
+        "may not have existed",
+        "No data found",
+        "No trading data",
+        "Incomplete data",
+        "No price data"
+    ]):
         return result
     
-    # If Yahoo Finance failed for other reasons, return generic error
+    # If Yahoo Finance failed for other reasons, return the original error with context
     return {
-        "error": "Unable to fetch stock data from Yahoo Finance.\n" +
-                 "Please check the symbol and try again."
+        "error": result["error"] + "\n\nPlease check the symbol and date, or try a different timeframe."
     }
 
 
@@ -780,9 +787,12 @@ def get_stock_price_yahoo(symbol: str, date_str: str, time_str: Optional[str] = 
         return result
     
     except requests.exceptions.RequestException as e:
+        error_str = str(e)
+        if "400" in error_str or "Bad Request" in error_str:
+            return {"error": f"No data available for {symbol} on {date_str}.\nThe stock/commodity may not have existed at that time, or data is unavailable for this date range."}
         return {"error": f"Failed to fetch from Yahoo Finance: {str(e)}"}
     except (KeyError, IndexError, TypeError) as e:
-        return {"error": f"Error parsing Yahoo Finance data: {str(e)}"}
+        return {"error": f"Error parsing Yahoo Finance data.\nThe stock/commodity may not have existed at that time, or data format is unexpected."}
     except ValueError as e:
         return {"error": f"Invalid date format: {str(e)}"}
     except Exception as e:
