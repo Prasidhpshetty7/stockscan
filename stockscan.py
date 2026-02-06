@@ -1079,6 +1079,12 @@ def print_live_price(live_data: Dict[str, Any], market_type: str):
         print(f"\n{RED}✗ Error: {live_data['error']}{RESET}\n")
         return
     
+    # Format price based on market type
+    if market_type == 'CRYPTO':
+        formatted_price = f"${live_data['price']:,.8f}"
+    else:
+        formatted_price = f"${live_data['price']:,.2f}"
+    
     output = f"""
 {PURPLE}{'─' * 70}{RESET}
 {BOLD}{BRIGHT_PURPLE}LIVE {market_type.upper()} PRICE{RESET}
@@ -1088,7 +1094,7 @@ def print_live_price(live_data: Dict[str, Any], market_type: str):
 {CYAN}SOURCE:{RESET}          {live_data['source']}
 {CYAN}TIMESTAMP:{RESET}       {live_data['timestamp'].strftime("%Y-%m-%d %H:%M:%S")}
 
-{GREEN}{BOLD}CURRENT PRICE:  ${live_data['price']:,.8f if market_type == 'CRYPTO' else live_data['price']:,.2f}{RESET}
+{GREEN}{BOLD}CURRENT PRICE:  {formatted_price}{RESET}
 
 {YELLOW}⚠ Note: {live_data['delay_note']}{RESET}
 
