@@ -1015,6 +1015,177 @@ def list_stock_symbols(limit: int = 50) -> List[str]:
         return []
 
 
+def get_live_crypto_price(symbol: str) -> Dict[str, Any]:
+    """Get current live price for crypto from Binance"""
+    try:
+        url = f"{BINANCE_BASE}/ticker/price"
+        params = {"symbol": symbol}
+        
+        response = requests.get(url, params=params, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        
+        return {
+            "symbol": symbol,
+            "price": float(data['price']),
+            "timestamp": datetime.now(),
+            "source": "Binance",
+            "delay_note": "Data may have 1-2 minute delay"
+        }
+    except Exception as e:
+        return {"error": f"Failed to fetch live price: {str(e)}"}
+
+
+def get_live_stock_price(symbol: str) -> Dict[str, Any]:
+    """Get current live price for stock from Yahoo Finance"""
+    try:
+        url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
+        params = {"interval": "1m", "range": "1d"}
+        headers = {"User-Agent": "Mozilla/5.0"}
+        
+        response = requests.get(url, params=params, headers=headers, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        
+        if "chart" not in data or "result" not in data["chart"]:
+            return {"error": "Invalid response from Yahoo Finance"}
+        
+        result = data["chart"]["result"]
+        if not result or len(result) == 0:
+            return {"error": f"No data found for symbol {symbol}"}
+        
+        quote = result[0]
+        meta = quote.get("meta", {})
+        
+        current_price = meta.get("regularMarketPrice") or meta.get("previousClose")
+        
+        if current_price is None:
+            return {"error": "Could not retrieve current price"}
+        
+        return {
+            "symbol": symbol,
+            "price": float(current_price),
+            "timestamp": datetime.now(),
+            "source": "Yahoo Finance",
+            "delay_note": "Data may have ~15 minute delay"
+        }
+    except Exception as e:
+        return {"error": f"Failed to fetch live price: {str(e)}"}
+
+
+def print_live_price(live_data: Dict[str, Any], market_type: str):
+    """Print live price in a formatted way"""
+    if "error" in live_data:
+        print(f"\n{RED}✗ Error: {live_data['error']}{RESET}\n")
+        return
+    
+    output = f"""
+{PURPLE}{'─' * 70}{RESET}
+{BOLD}{BRIGHT_PURPLE}LIVE {market_type.upper()} PRICE{RESET}
+{PURPLE}{'─' * 70}{RESET}
+
+{CYAN}ASSET:{RESET}           {live_data['symbol']}
+{CYAN}SOURCE:{RESET}          {live_data['source']}
+{CYAN}TIMESTAMP:{RESET}       {live_data['timestamp'].strftime("%Y-%m-%d %H:%M:%S")}
+
+{GREEN}{BOLD}CURRENT PRICE:  ${live_data['price']:,.8f if market_type == 'CRYPTO' else live_data['price']:,.2f}{RESET}
+
+{YELLOW}⚠ Note: {live_data['delay_note']}{RESET}
+
+{PURPLE}{'─' * 70}{RESET}
+"""
+    print(output)
+
+
+def print_price_comparison(checked_result: Dict[str, Any], live_data: Dict[str, Any], market_type: str):
+    """Print comparison between checked price and current price"""
+    if "error" in live_data:
+        print(f"\n{RED}✗ Error fetching current price: {live_data['error']}{RESET}\n")
+        return
+    
+    # Extract prices
+    checked_price = checked_result['close']
+    current_price = live_data['price']
+    
+    # Calculate P&L
+    pnl = current_price - checked_price
+    pnl_percent = (pnl / checked_price) * 100 if checked_price != 0 else 0
+    
+    # Determine profit/loss
+    if pnl > 0:
+        pnl_color = GREEN
+        movement = "PROFIT ↑"
+        pnl_sign = "+"
+    elif pnl < 0:
+        pnl_color = RED
+        movement = "LOSS ↓"
+        pnl_sign = ""
+    else:
+        pnl_color = YELLOW
+        movement = "NO CHANGE →"
+        pnl_sign = ""
+    
+    # Calculate time difference
+    if market_type == "CRYPTO":
+        checked_time = datetime.strptime(checked_result['requested_time'], "%Y-%m-%d %H:%M UTC")
+    else:
+        checked_time = datetime.strptime(checked_result['requested_date'], "%Y-%m-%d")
+    
+    current_time = live_data['timestamp']
+    time_diff = current_time - checked_time
+    
+    # Format time difference
+    days = time_diff.days
+    hours = time_diff.seconds // 3600
+    minutes = (time_diff.seconds % 3600) // 60
+    
+    if days > 0:
+        time_period = f"{days} day(s), {hours} hour(s), {minutes} minute(s)"
+    elif hours > 0:
+        time_period = f"{hours} hour(s), {minutes} minute(s)"
+    else:
+        time_period = f"{minutes} minute(s)"
+    
+    # Format prices
+    if market_type == "CRYPTO":
+        price_format = ",.8f"
+        currency = "$"
+    else:
+        price_format = ",.2f"
+        # Detect currency
+        symbol = checked_result['symbol']
+        if '.NS' in symbol or '.BO' in symbol:
+            currency = '₹'
+        else:
+            currency = '$'
+    
+    output = f"""
+{PURPLE}{'─' * 70}{RESET}
+{BOLD}{BRIGHT_PURPLE}PRICE COMPARISON - {market_type}{RESET}
+{PURPLE}{'─' * 70}{RESET}
+
+{CYAN}CHECKED PRICE:{RESET}
+  Date/Time:  {checked_result.get('requested_time') or checked_result.get('requested_date')}
+  Price:      {currency}{checked_price:{price_format}}
+
+{CYAN}CURRENT PRICE:{RESET}
+  Date/Time:  {current_time.strftime("%Y-%m-%d %H:%M:%S")}
+  Price:      {currency}{current_price:{price_format}}
+
+{CYAN}ANALYSIS:{RESET}
+  {pnl_color}{BOLD}P&L:        {pnl_sign}{currency}{abs(pnl):{price_format}}{RESET}
+  {pnl_color}{BOLD}Change:     {pnl_sign}{pnl_percent:.2f}%{RESET}
+  {pnl_color}{BOLD}Movement:   {movement}{RESET}
+  
+{CYAN}TIME PERIOD:{RESET}  {time_period}
+
+{YELLOW}⚠ Note: {live_data['delay_note']}{RESET}
+
+{PURPLE}{'─' * 70}{RESET}
+"""
+    print(output)
+
+
 def print_crypto_result(result: Dict[str, Any]):
     """Print crypto price result in CryptoFetch style with price change calculations"""
     if "error" in result:
@@ -1204,6 +1375,32 @@ def print_stock_result(result: Dict[str, Any]):
     print(output)
 
 
+def show_more_options_menu(result: Dict[str, Any], symbol: str, market_type: str) -> str:
+    """Show more options menu after displaying price data
+    
+    Args:
+        result: The price result dictionary
+        symbol: The asset symbol
+        market_type: 'CRYPTO', 'STOCK', or 'COMMODITY'
+    
+    Returns:
+        User's choice ('1', '2', '3')
+    """
+    print(f"\n{CYAN}{'─' * 70}{RESET}")
+    print(f"{BOLD}{BRIGHT_PURPLE}What would you like to do next?{RESET}\n")
+    print(f"  {GREEN}[1]{RESET}  Check Live Price       - View current market price")
+    print(f"  {GREEN}[2]{RESET}  Compare with Current   - See price movement & P&L")
+    print(f"  {GREEN}[3]{RESET}  Continue               - Check another asset\n")
+    
+    while True:
+        choice = input(f"{CYAN}Select option (1-3):{RESET} ").strip()
+        
+        if choice in ['1', '2', '3']:
+            return choice
+        else:
+            print(f"{RED}⚠ Invalid choice! Please enter 1, 2, or 3{RESET}")
+
+
 def interactive_mode():
     """Interactive mode - guides user through price lookup"""
     print_banner()
@@ -1293,6 +1490,19 @@ def interactive_mode():
                 
                 result = get_stock_price(symbol.upper(), date, None, timeframe)
                 print_stock_result(result)
+                
+                # Show more options menu if result is valid
+                if "error" not in result:
+                    choice = show_more_options_menu(result, symbol.upper(), "STOCK")
+                    
+                    if choice == '1':
+                        # Check live price
+                        live_data = get_live_stock_price(symbol.upper())
+                        print_live_price(live_data, "STOCK")
+                    elif choice == '2':
+                        # Compare with current price
+                        live_data = get_live_stock_price(symbol.upper())
+                        print_price_comparison(result, live_data, "STOCK")
                 
                 # Ask if they want to check another
                 print(f"\n{DIM}Press Enter to check another stock, or type 'back' to change market{RESET}")
@@ -1448,6 +1658,19 @@ def interactive_mode():
                 result = get_crypto_price(symbol.upper(), date, time, timeframe)
                 print_crypto_result(result)
                 
+                # Show more options menu if result is valid
+                if "error" not in result:
+                    choice = show_more_options_menu(result, symbol.upper(), "CRYPTO")
+                    
+                    if choice == '1':
+                        # Check live price
+                        live_data = get_live_crypto_price(symbol.upper())
+                        print_live_price(live_data, "CRYPTO")
+                    elif choice == '2':
+                        # Compare with current price
+                        live_data = get_live_crypto_price(symbol.upper())
+                        print_price_comparison(result, live_data, "CRYPTO")
+                
                 # Ask if they want to check another
                 print(f"\n{DIM}Press Enter to check another crypto, or type 'back' to change market{RESET}")
                 continue_choice = input().strip().lower()
@@ -1566,6 +1789,19 @@ def interactive_mode():
                     result['commodity_name'] = COMMODITY_ETFS[symbol]
                 
                 print_stock_result(result)
+                
+                # Show more options menu if result is valid
+                if "error" not in result:
+                    choice = show_more_options_menu(result, symbol, "COMMODITY")
+                    
+                    if choice == '1':
+                        # Check live price
+                        live_data = get_live_stock_price(symbol)
+                        print_live_price(live_data, "COMMODITY")
+                    elif choice == '2':
+                        # Compare with current price
+                        live_data = get_live_stock_price(symbol)
+                        print_price_comparison(result, live_data, "COMMODITY")
                 
                 # Ask if they want to check another
                 print(f"\n{DIM}Press Enter to check another commodity, or type 'back' to change market{RESET}")
