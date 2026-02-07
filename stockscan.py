@@ -221,8 +221,6 @@ def print_description():
 {CYAN}What is StockScan?{RESET}
   StockScan lets you look up the exact price of any crypto, stock, or commodity
   at a specific date and time using OHLCV candle logic.
-  
-  {GREEN}NEW:{RESET} Now with live price checking and price comparison features!
 
 {CYAN}How it works:{RESET}
   • Fetches OHLCV (Open, High, Low, Close, Volume) candle data
@@ -242,16 +240,10 @@ def print_description():
     - Works out of the box!
 
 {CYAN}Coverage:{RESET}
-  {GREEN}✅ Supported:{RESET}
-    • All major large-cap and mid-cap stocks
-    • All NIFTY 50 and BSE Sensex stocks
-    • 1000+ crypto pairs on Binance
-    • 130+ commodity ETFs
-  
-  {RED}❌ Not Supported:{RESET}
-    • Very small-cap/micro-cap stocks
-    • Very newly listed IPOs
-    • Unlisted/private companies
+  • All major large-cap and mid-cap stocks
+  • All NIFTY 50 and BSE Sensex stocks
+  • 1000+ crypto pairs on Binance
+  • 130+ commodity ETFs
 """
     print(desc)
 
