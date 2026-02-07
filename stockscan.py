@@ -221,11 +221,14 @@ def print_description():
 {CYAN}What is StockScan?{RESET}
   StockScan lets you look up the exact price of any crypto, stock, or commodity
   at a specific date and time using OHLCV candle logic.
+  
+  {GREEN}NEW:{RESET} Now with live price checking and price comparison features!
 
 {CYAN}How it works:{RESET}
   • Fetches OHLCV (Open, High, Low, Close, Volume) candle data
   • Finds the candle that CONTAINS your requested time
   • Returns the CLOSE price as the price at that time
+  • Compare with current price to see profit/loss
   • This is the standard method used by professional trading tools
 
 {CYAN}Data Sources:{RESET}
@@ -237,6 +240,18 @@ def print_description():
     - Supports: 1d (daily), 1wk (weekly), 1mo (monthly)
     - Gold, Silver, Oil, Natural Gas, Agriculture, Metals & more!
     - Works out of the box!
+
+{CYAN}Coverage:{RESET}
+  {GREEN}✅ Supported:{RESET}
+    • All major large-cap and mid-cap stocks
+    • All NIFTY 50 and BSE Sensex stocks
+    • 1000+ crypto pairs on Binance
+    • 130+ commodity ETFs
+  
+  {RED}❌ Not Supported:{RESET}
+    • Very small-cap/micro-cap stocks
+    • Very newly listed IPOs
+    • Unlisted/private companies
 """
     print(desc)
 
@@ -253,7 +268,9 @@ def print_usage():
   {GREEN}# Get stock price with timeframe{RESET}
   python stockscan.py stock AAPL 2024-01-15 --timeframe 1d
   python stockscan.py stock TSLA 2024-01-10 --timeframe 1wk
-  python stockscan.py stock RELIANCE.NS 2024-01-15 --timeframe 1mo
+  python stockscan.py stock TCS.NS 2024-01-15 --timeframe 1mo
+  python stockscan.py stock RELIANCE.NS 2024-01-15 --timeframe 1d
+  python stockscan.py stock HDFCBANK.BO 2024-01-15 --timeframe 1wk
 
   {GREEN}# Get commodity price with timeframe{RESET}
   python stockscan.py commodity GLD 2024-01-15 --timeframe 1d
@@ -273,15 +290,26 @@ def print_usage():
   {BOLD}Stocks:{RESET} 1d (daily), 1wk (weekly), 1mo (monthly)
   {BOLD}Commodities:{RESET} 1d (daily), 1wk (weekly), 1mo (monthly)
 
+{CYAN}Interactive Mode Features:{RESET}
+  • After viewing historical price, you get 3 options:
+    {GREEN}[1]{RESET} Check Live Price - View current market price
+    {GREEN}[2]{RESET} Compare with Current - See P&L and percentage change
+    {GREEN}[3]{RESET} Continue - Check another asset
+
 {CYAN}How it works:{RESET}
   • Uses OHLCV candle logic (industry-standard method)
   • Finds the candle that CONTAINS your requested time
   • Returns the CLOSE price of that candle
+  • Compare with current price to see profit/loss
   • This is the standard method for historical price lookups
 
 {GREEN}✅ NO API KEYS NEEDED!{RESET}
   Crypto (Binance), Stocks (Yahoo Finance), and Commodities (Yahoo Finance)
   all work out of the box. Just download and run!
+
+{YELLOW}⚠ Coverage Note:{RESET}
+  StockScan covers all major large-cap and mid-cap stocks.
+  Very small-cap stocks and very newly listed IPOs are not supported.
 
 {DIM}Optional: For additional stock data sources, you can set API keys:
   • Alpha Vantage: https://www.alphavantage.co/support/#api-key
@@ -651,18 +679,18 @@ def get_stock_price_yahoo(symbol: str, date_str: str, time_str: Optional[str] = 
         
         result = data["chart"]["result"]
         if not result or len(result) == 0:
-            return {"error": f"No data found for symbol {symbol}.\nThe stock/commodity may not have existed at that time, or data is unavailable."}
+            return {"error": f"No data found for symbol {symbol}.\nThe stock/commodity may not have existed at that time, or data is unavailable.\n\nNote: StockScan doesn't cover very small-cap stocks and very newly listed IPOs.\nPlease verify the symbol is correct and the company has sufficient trading history."}
         
         quote = result[0]
         
         if "timestamp" not in quote or "indicators" not in quote:
-            return {"error": "Invalid data format from Yahoo Finance.\nThe stock/commodity may not have existed at that time, or data is unavailable."}
+            return {"error": "Invalid data format from Yahoo Finance.\nThe stock/commodity may not have existed at that time, or data is unavailable.\n\nNote: StockScan doesn't cover very small-cap stocks and very newly listed IPOs.\nPlease verify the symbol is correct and the company has sufficient trading history."}
         
         timestamps = quote["timestamp"]
         indicators = quote["indicators"]["quote"][0]
         
         if not timestamps or not indicators:
-            return {"error": "No price data available.\nThe stock/commodity may not have existed at that time, or data is unavailable."}
+            return {"error": "No price data available.\nThe stock/commodity may not have existed at that time, or data is unavailable.\n\nNote: StockScan doesn't cover very small-cap stocks and very newly listed IPOs.\nPlease verify the symbol is correct and the company has sufficient trading history."}
         
         # Find the data for our target period
         if timeframe in ["1wk", "1mo"]:
@@ -790,10 +818,10 @@ def get_stock_price_yahoo(symbol: str, date_str: str, time_str: Optional[str] = 
     except requests.exceptions.RequestException as e:
         error_str = str(e)
         if "400" in error_str or "Bad Request" in error_str:
-            return {"error": f"No data available for {symbol} on {date_str}.\nThe stock/commodity may not have existed at that time, or data is unavailable for this date range."}
+            return {"error": f"No data available for {symbol} on {date_str}.\nThe stock/commodity may not have existed at that time, or data is unavailable for this date range.\n\nNote: StockScan doesn't cover very small-cap stocks and very newly listed IPOs.\nPlease verify the symbol is correct and the company has sufficient trading history."}
         return {"error": f"Failed to fetch from Yahoo Finance: {str(e)}"}
     except (KeyError, IndexError, TypeError) as e:
-        return {"error": f"Error parsing Yahoo Finance data.\nThe stock/commodity may not have existed at that time, or data format is unexpected."}
+        return {"error": f"Error parsing Yahoo Finance data.\nThe stock/commodity may not have existed at that time, or data format is unexpected.\n\nNote: StockScan doesn't cover very small-cap stocks and very newly listed IPOs.\nPlease verify the symbol is correct and the company has sufficient trading history."}
     except ValueError as e:
         return {"error": f"Invalid date format: {str(e)}"}
     except Exception as e:
@@ -1436,14 +1464,15 @@ def interactive_mode():
             # Stock mode
             print(f"\n{CYAN}{'─' * 70}{RESET}")
             print(f"{BOLD}{BRIGHT_PURPLE}STOCK PRICE LOOKUP{RESET}\n")
-            print(f"{CYAN}Syntax:{RESET} {GREEN}<SYMBOL> <DATE> [TIMEFRAME]{RESET}")
+            print(f"{CYAN}Syntax:{RESET} {GREEN}<SYMBOL> <DATE>{RESET}")
             print(f"{CYAN}Examples:{RESET}")
-            print(f"  AAPL 2026-01-15     {DIM}(US stock - Will ask for timeframe){RESET}")
-            print(f"  AAPL 2026-01-15 1d  {DIM}(US stock - Direct with timeframe){RESET}")
-            print(f"  TCS.NS 2024-12-20 1wk {DIM}(Indian NSE stock - Weekly candle){RESET}")
-            print(f"  RELIANCE.NS 2024-12-20     {DIM}(Indian NSE stock - Will ask for timeframe){RESET}")
-            print(f"  HDFCBANK.BO 2024-12-20 1d {DIM}(Indian BSE stock - Daily candle){RESET}\n")
+            print(f"  AAPL 2026-01-15")
+            print(f"  TSLA 2026-01-10")
+            print(f"  TCS.NS 2024-12-20")
+            print(f"  RELIANCE.NS 2024-12-20")
+            print(f"  HDFCBANK.BO 2024-12-20\n")
             print(f"{DIM}Date format: YYYY-MM-DD{RESET}")
+            print(f"{DIM}Will ask for timeframe after you enter{RESET}")
             print(f"{DIM}Type 'back' to return to market selection{RESET}\n")
             
             while True:
@@ -1528,6 +1557,7 @@ def interactive_mode():
             print(f"  ETHUSDT 2026-01-15")
             print(f"  BNBUSDT 2026-01-10\n")
             print(f"{DIM}Date format: YYYY-MM-DD{RESET}")
+            print(f"{DIM}Will ask for timeframe after you enter{RESET}")
             print(f"{DIM}Type 'back' to return to market selection{RESET}\n")
             
             while True:
@@ -1689,12 +1719,13 @@ def interactive_mode():
             # Commodity mode
             print(f"\n{CYAN}{'─' * 70}{RESET}")
             print(f"{BOLD}{BRIGHT_PURPLE}COMMODITY PRICE LOOKUP{RESET}\n")
-            print(f"{CYAN}Syntax:{RESET} {GREEN}<SYMBOL> <DATE> [TIMEFRAME]{RESET}")
+            print(f"{CYAN}Syntax:{RESET} {GREEN}<SYMBOL> <DATE>{RESET}")
             print(f"{CYAN}Examples:{RESET}")
-            print(f"  GLD 2026-01-15      {DIM}(Gold - Will ask for timeframe){RESET}")
-            print(f"  USO 2026-01-15 1d   {DIM}(Oil - Direct with timeframe){RESET}")
-            print(f"  CORN 2024-12-20 1wk {DIM}(Corn - Weekly candle){RESET}\n")
+            print(f"  GLD 2026-01-15")
+            print(f"  USO 2026-01-15")
+            print(f"  CORN 2024-12-20\n")
             print(f"{DIM}Date format: YYYY-MM-DD{RESET}")
+            print(f"{DIM}Will ask for timeframe after you enter{RESET}")
             print(f"{DIM}Type 'list' to see all available commodities{RESET}")
             print(f"{DIM}Type 'back' to return to market selection{RESET}\n")
             

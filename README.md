@@ -10,10 +10,14 @@ No API keys. No registration. Just download and run.
 
 StockScan answers one simple question: **"What was the price at this exact time?"**
 
+Plus, it now lets you **compare with current prices** and see your potential profit/loss!
+
 - 📊 **Stocks**: Check any US or Indian stock (AAPL, TSLA, RELIANCE.NS, etc.)
 - 💰 **Crypto**: Check any Binance coin (BTC, ETH, BNB, etc.)
 - 🏆 **Commodities**: Check 98+ commodity ETFs (Gold, Oil, Corn, etc.)
 - 🕐 **Any Time**: Historical prices from any date/time
+- 🔴 **Live Prices**: Check current market price after viewing historical data
+- 📈 **Price Comparison**: See P&L, percentage change, and profit/loss between historical and current prices
 - 🎨 **Beautiful Output**: Clean, colorful terminal display
 
 ---
@@ -92,7 +96,9 @@ cd stockscan
 ```bash
 python stockscan.py stock AAPL 2026-01-15 --timeframe 1d
 python stockscan.py stock TSLA 2024-12-20 --timeframe 1wk
-python stockscan.py stock RELIANCE.NS 2024-01-15 --timeframe 1mo
+python stockscan.py stock TCS.NS 2024-01-15 --timeframe 1mo
+python stockscan.py stock RELIANCE.NS 2024-01-15 --timeframe 1d
+python stockscan.py stock HDFCBANK.BO 2024-01-15 --timeframe 1wk
 ```
 
 **Crypto:**
@@ -328,11 +334,147 @@ Note: This uses OHLCV candle logic. The CLOSE price of the candle
 ✅ **Midnight Crossing Detection** - Automatically detects and shows time split across dates  
 ✅ **Historical Data** - Check any past date with full history  
 ✅ **Weekly/Monthly Periods** - Shows full calendar periods with trading day counts  
+✅ **Live Price Checking** - Check current market price after viewing historical data  
+✅ **Price Comparison** - Compare historical price with current price, see P&L and percentage change  
 ✅ **Price Movement Calculator** - Shows change and percentage gain/loss  
 ✅ **Smart Holiday Detection** - Warns about weekends and holidays in the period  
+✅ **Smart Error Messages** - Clear warnings about unsupported symbols (very small-cap stocks, new IPOs)  
 ✅ **Beautiful UI** - Colorful terminal output with color-coded gains/losses  
 ✅ **Error Handling** - Clear warnings and helpful messages  
 ✅ **Interactive & CLI Modes** - Use whichever you prefer  
+
+---
+
+## 🔴 Live Price & Comparison Features
+
+After checking a historical price, StockScan offers additional options:
+
+### More Options Menu
+
+After displaying historical price data, you'll see:
+
+```
+──────────────────────────────────────────────────────────────────────
+What would you like to do next?
+
+  [1]  Check Live Price       - View current market price
+  [2]  Compare with Current   - See price movement & P&L
+  [3]  Continue               - Check another asset
+
+Select option (1-3): _
+```
+
+### Option 1: Check Live Price
+
+Shows the current market price with timestamp:
+
+```
+──────────────────────────────────────────────────────────────────────
+LIVE STOCK PRICE
+──────────────────────────────────────────────────────────────────────
+
+ASSET:           AAPL
+SOURCE:          Yahoo Finance
+TIMESTAMP:       2026-02-07 14:30:45
+
+CURRENT PRICE:  $265.50
+
+⚠ Note: The current price may have a ~15 minute delay
+
+──────────────────────────────────────────────────────────────────────
+```
+
+**Data Sources:**
+- **Crypto**: Binance API (1-2 minute delay)
+- **Stocks**: Yahoo Finance (15 minute delay)
+- **Commodities**: Yahoo Finance (15 minute delay)
+
+### Option 2: Compare with Current Price
+
+Shows detailed comparison between historical and current price:
+
+```
+──────────────────────────────────────────────────────────────────────
+PRICE COMPARISON - STOCK
+──────────────────────────────────────────────────────────────────────
+
+CHECKED PRICE:
+  Date/Time:  2026-01-15
+  Price:      $258.21
+
+CURRENT PRICE:
+  Date/Time:  2026-02-07 14:30:45
+  Price:      $265.50
+
+ANALYSIS:
+  P&L:        +$7.29
+  Change:     +2.82%
+  Movement:   PROFIT ↑
+  
+TIME PERIOD:  23 day(s), 14 hour(s), 30 minute(s)
+
+⚠ Note: The current price may have a ~15 minute delay
+
+──────────────────────────────────────────────────────────────────────
+```
+
+**Features:**
+- ✅ Shows both checked and current prices side-by-side
+- ✅ Calculates P&L (Profit & Loss)
+- ✅ Shows percentage change
+- ✅ Color-coded: Green for profit, Red for loss
+- ✅ Displays exact time period between prices
+- ✅ Works for crypto, stocks, and commodities
+
+### Option 3: Continue
+
+Returns to the normal flow - press Enter to check another asset or type 'back' to change markets.
+
+---
+
+## 📋 Coverage & Limitations
+
+### ✅ What IS Supported
+
+**Stocks:**
+- All major large-cap and mid-cap stocks
+- All NIFTY 50 stocks (India NSE)
+- All BSE Sensex stocks (India BSE)
+- All major US stocks (NYSE, NASDAQ, AMEX)
+- 1000+ NSE/BSE listed stocks
+- Major international stocks
+
+**Crypto:**
+- 1000+ Binance spot trading pairs
+- All major cryptocurrencies (BTC, ETH, BNB, etc.)
+- Full historical data with 16 timeframes
+
+**Commodities:**
+- 98+ commodity ETFs
+- Gold, Silver, Platinum, Palladium
+- Oil, Natural Gas, Gasoline
+- Agriculture (Corn, Wheat, Soy, etc.)
+- Industrial Metals (Copper, Aluminum, etc.)
+
+### ❌ What is NOT Supported
+
+**Stocks:**
+- Very small-cap/micro-cap stocks (extremely small companies with minimal liquidity)
+- Very newly listed IPOs (companies that just went public with limited trading history)
+- Unlisted/private companies (not traded on public exchanges)
+- Recently delisted stocks
+
+**Why?**
+These stocks either don't have sufficient data available on Yahoo Finance or lack the trading history needed for reliable price lookups.
+
+**Error Message:**
+If you try to look up an unsupported stock, you'll see:
+```
+✗ Error: No data found for symbol [SYMBOL].
+
+Note: StockScan doesn't cover very small-cap stocks and very newly listed IPOs.
+Please verify the symbol is correct and the company has sufficient trading history.
+```
 
 ---
 
@@ -381,11 +523,25 @@ python stockscan.py stock AAPL 2024-01-15 --timeframe 1wk
 # Change: +$9.40 (+5.16%)
 ```
 
-### Check Indian Stock (Monthly)
+### Check Indian Stock NSE (Monthly)
 ```bash
-python stockscan.py stock RELIANCE.NS 2024-01-15 --timeframe 1mo
-# Output: ₹1,426.62 (Close price)
-# Change: +₹136.35 (+10.57%)
+python stockscan.py stock TCS.NS 2024-01-15 --timeframe 1mo
+# Output: ₹3,712.45 (Close price)
+# Change: +₹245.30 (+7.08%)
+```
+
+### Check Indian Stock NSE (Daily)
+```bash
+python stockscan.py stock RELIANCE.NS 2024-01-15 --timeframe 1d
+# Output: ₹2,456.80 (Close price)
+# Change: +₹12.50 (+0.51%)
+```
+
+### Check Indian Stock BSE (Weekly)
+```bash
+python stockscan.py stock HDFCBANK.BO 2024-01-15 --timeframe 1wk
+# Output: ₹1,598.25 (Close price)
+# Change: +₹45.60 (+2.94%)
 ```
 
 ### Check Bitcoin Price
@@ -659,6 +815,26 @@ A: No, it will show: "Future price data does not exist."
 
 **Q: What if the market was closed on my date?**  
 A: For stocks, it will show the closest trading day.
+
+**Q: Can I check the current live price?**  
+A: Yes! After viewing historical data, choose option [1] to see the current market price.
+
+**Q: Can I compare historical price with current price?**  
+A: Yes! After viewing historical data, choose option [2] to see a detailed comparison with P&L, percentage change, and time period.
+
+**Q: How accurate is the live price?**  
+A: Very accurate! Crypto has 1-2 minute delay (Binance), Stocks/Commodities have ~15 minute delay (Yahoo Finance).
+
+**Q: What if I enter a wrong stock symbol?**  
+A: StockScan will show an error message. Note that StockScan doesn't cover very small-cap stocks and very newly listed IPOs. Please verify the symbol is correct and the company has sufficient trading history.
+
+**Q: What stocks are NOT supported?**  
+A: StockScan doesn't cover:
+   - Very small-cap/micro-cap stocks (extremely small companies)
+   - Very newly listed IPOs (companies that just went public)
+   - Unlisted/private companies (not traded on exchanges)
+   
+   All major large-cap and mid-cap stocks are fully supported!
 
 **Q: How accurate is the data?**  
 A: Very accurate! Data comes directly from Binance and Yahoo Finance.

@@ -86,7 +86,9 @@ cd stockscan
 ```bash
 python stockscan.py stock AAPL 2026-01-15 --timeframe 1d
 python stockscan.py stock TSLA 2024-12-20 --timeframe 1wk
-python stockscan.py stock RELIANCE.NS 2024-01-15 --timeframe 1mo
+python stockscan.py stock TCS.NS 2024-01-15 --timeframe 1mo
+python stockscan.py stock RELIANCE.NS 2024-01-15 --timeframe 1d
+python stockscan.py stock HDFCBANK.BO 2024-01-15 --timeframe 1wk
 ```
 
 **For Crypto:**
@@ -291,6 +293,100 @@ PRICE MOVEMENT:
 
 ---
 
+## 🔴 Live Price & Comparison Features (NEW!)
+
+After checking a historical price, StockScan now offers additional options!
+
+### What Happens After You Check a Price?
+
+Instead of immediately asking "Press Enter to continue", you'll now see:
+
+```
+──────────────────────────────────────────────────────────────────────
+What would you like to do next?
+
+  [1]  Check Live Price       - View current market price
+  [2]  Compare with Current   - See price movement & P&L
+  [3]  Continue               - Check another asset
+
+Select option (1-3): _
+```
+
+### Option 1: Check Live Price
+
+Shows you the current market price right now:
+
+```
+──────────────────────────────────────────────────────────────────────
+LIVE STOCK PRICE
+──────────────────────────────────────────────────────────────────────
+
+ASSET:           AAPL
+SOURCE:          Yahoo Finance
+TIMESTAMP:       2026-02-07 14:30:45
+
+CURRENT PRICE:  $265.50
+
+⚠ Note: The current price may have a ~15 minute delay
+
+──────────────────────────────────────────────────────────────────────
+```
+
+**Delay Times:**
+- Crypto: 1-2 minute delay (Binance)
+- Stocks: ~15 minute delay (Yahoo Finance)
+- Commodities: ~15 minute delay (Yahoo Finance)
+
+### Option 2: Compare with Current Price
+
+This is the BEST feature! It shows you:
+- Your checked historical price
+- The current market price
+- How much profit/loss you would have made
+- Percentage change
+- Exact time period between the two prices
+
+```
+──────────────────────────────────────────────────────────────────────
+PRICE COMPARISON - STOCK
+──────────────────────────────────────────────────────────────────────
+
+CHECKED PRICE:
+  Date/Time:  2026-01-15
+  Price:      $258.21
+
+CURRENT PRICE:
+  Date/Time:  2026-02-07 14:30:45
+  Price:      $265.50
+
+ANALYSIS:
+  P&L:        +$7.29                       👈 You would have gained $7.29!
+  Change:     +2.82%                       👈 2.82% profit!
+  Movement:   PROFIT ↑                     👈 Green color = profit!
+  
+TIME PERIOD:  23 day(s), 14 hour(s), 30 minute(s)
+
+⚠ Note: The current price may have a ~15 minute delay
+
+──────────────────────────────────────────────────────────────────────
+```
+
+**Color Coding:**
+- 🟢 Green with "PROFIT ↑" = Price went up (you made money!)
+- 🔴 Red with "LOSS ↓" = Price went down (you lost money)
+- 🟡 Yellow with "NO CHANGE →" = Price stayed the same
+
+**Works for ALL markets:**
+- ✅ Stocks (US & Indian)
+- ✅ Crypto
+- ✅ Commodities
+
+### Option 3: Continue
+
+Just press 3 and it goes back to the normal flow - press Enter to check another asset.
+
+---
+
 ## Common Questions
 
 **Q: Do I need an API key?**
@@ -316,6 +412,28 @@ A: You'll see: "No data available for [SYMBOL] on [DATE]. The stock/commodity ma
 
 **Q: What if I make a mistake?**
 A: The tool will show you a warning and ask you to try again with the correct format.
+
+**Q: Can I check the current live price?**
+A: Yes! After viewing historical data, choose option [1] to see the current market price.
+
+**Q: Can I compare historical price with current price?**
+A: Yes! After viewing historical data, choose option [2] to see a detailed comparison with P&L, percentage change, and time period.
+
+**Q: How accurate is the live price?**
+A: Very accurate! Crypto has 1-2 minute delay (Binance), Stocks/Commodities have ~15 minute delay (Yahoo Finance).
+
+**Q: Does the comparison feature work for all markets?**
+A: Yes! It works for crypto, stocks (US & Indian), and commodities.
+
+**Q: What if I enter a wrong stock symbol?**
+A: StockScan will show an error message. Note that StockScan doesn't cover very small-cap stocks and very newly listed IPOs. Please verify the symbol is correct and the company has sufficient trading history.
+
+**Q: What stocks are NOT supported?**
+A: StockScan doesn't cover:
+   - Very small-cap/micro-cap stocks (extremely small companies)
+   - Very newly listed IPOs (companies that just went public)
+   - Unlisted/private companies (not traded on exchanges)
+   All major large-cap and mid-cap stocks are fully supported!
 
 ---
 

@@ -81,7 +81,7 @@ You'll see this question:
 ──────────────────────────────────────────────────────────────────────
 Which market do you want to check?
 
-  [1] Stocks       (AAPL, TSLA, MSFT, etc.)
+  [1] Stocks       (AAPL, TSLA, RELIANCE.NS, HDFCBANK.BO, etc.)
   [2] Crypto       (BTCUSDT, ETHUSDT, etc.)
   [3] Commodities  (GLD, USO, CORN, etc.)
   [Q] Quit
@@ -107,11 +107,14 @@ STOCK PRICE LOOKUP
 
 Syntax: <SYMBOL> <DATE>
 Examples:
-  AAPL 2026-01-15  (Apple)
-  TSLA 2024-12-20  (Tesla)
-  MSFT 2025-06-10  (Microsoft)
+  AAPL 2026-01-15
+  TSLA 2026-01-10
+  TCS.NS 2024-12-20
+  RELIANCE.NS 2024-12-20
+  HDFCBANK.BO 2024-12-20
 
 Date format: YYYY-MM-DD
+Will ask for timeframe after you enter
 Type 'back' to return to market selection
 
 Enter stock lookup: _
@@ -176,8 +179,69 @@ Note: This uses OHLCV candle logic. The CLOSE price of the daily
 
 ──────────────────────────────────────────────────────────────────────
 
+──────────────────────────────────────────────────────────────────────
+What would you like to do next?
+
+  [1]  Check Live Price       - View current market price
+  [2]  Compare with Current   - See price movement & P&L
+  [3]  Continue               - Check another asset
+
+Select option (1-3): _
+```
+
+### Step 3: More Options Menu
+
+After seeing the price result, you now have 3 options:
+
+**Option 1: Check Live Price**
+- Shows the current market price
+- Includes timestamp
+- Shows delay warning (15 min for stocks, 1-2 min for crypto)
+
+**Option 2: Compare with Current**
+- Shows both historical and current prices
+- Calculates P&L (Profit & Loss)
+- Shows percentage change
+- Color-coded: Green for profit, Red for loss
+- Displays time period between the two prices
+
+**Option 3: Continue**
+- Skip to checking another stock
+
+Let's choose **Option 2** to see the comparison:
+
+```
+──────────────────────────────────────────────────────────────────────
+PRICE COMPARISON - STOCK
+──────────────────────────────────────────────────────────────────────
+
+CHECKED PRICE:
+  Date/Time:  2026-01-15
+  Price:      $258.21
+
+CURRENT PRICE:
+  Date/Time:  2026-02-07 14:30:45
+  Price:      $265.50
+
+ANALYSIS:
+  P&L:        +$7.29
+  Change:     +2.82%
+  Movement:   PROFIT ↑
+  
+TIME PERIOD:  23 day(s), 14 hour(s), 30 minute(s)
+
+⚠ Note: The current price may have a ~15 minute delay
+
+──────────────────────────────────────────────────────────────────────
+
 Press Enter to check another stock, or type 'back' to change market
 ```
+
+---
+
+**What to do next:**
+- Press Enter → Check another stock
+- Type `back` → Go back to market selection (choose crypto or quit)
 
 ---
 
@@ -697,6 +761,29 @@ Example: GLD 2026-01-15
 ```
 
 Then it asks you again!
+
+### Wrong or Unsupported Symbol
+If you type a symbol that doesn't exist or isn't supported:
+
+```
+✗ Error: No data found for symbol WRONGSYMBOL.
+The stock/commodity may not have existed at that time, or data is unavailable.
+
+Note: StockScan doesn't cover very small-cap stocks and very newly listed IPOs.
+Please verify the symbol is correct and the company has sufficient trading history.
+```
+
+**What's NOT supported:**
+- Very small-cap/micro-cap stocks (extremely small companies)
+- Very newly listed IPOs (companies that just went public)
+- Unlisted/private companies (not traded on exchanges)
+
+**What IS supported:**
+- All major large-cap and mid-cap stocks
+- All NIFTY 50 and BSE Sensex stocks
+- All major US stocks (NYSE, NASDAQ)
+- 1000+ crypto pairs on Binance
+- 98+ commodity ETFs
 
 ---
 
