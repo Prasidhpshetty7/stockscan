@@ -1030,7 +1030,7 @@ def get_live_crypto_price(symbol: str) -> Dict[str, Any]:
             "price": float(data['price']),
             "timestamp": datetime.now(),
             "source": "Binance",
-            "delay_note": "Data may have 1-2 minute delay"
+            "delay_note": "The current price may have a 1-2 minute delay"
         }
     except Exception as e:
         return {"error": f"Failed to fetch live price: {str(e)}"}
@@ -1067,7 +1067,7 @@ def get_live_stock_price(symbol: str) -> Dict[str, Any]:
             "price": float(current_price),
             "timestamp": datetime.now(),
             "source": "Yahoo Finance",
-            "delay_note": "Data may have ~15 minute delay"
+            "delay_note": "The current price may have a ~15 minute delay"
         }
     except Exception as e:
         return {"error": f"Failed to fetch live price: {str(e)}"}
