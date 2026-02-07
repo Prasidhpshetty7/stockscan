@@ -95,10 +95,10 @@ cd stockscan
 **Stocks:**
 ```bash
 python stockscan.py stock AAPL 2026-01-15 --timeframe 1d
-python stockscan.py stock TSLA 2024-12-20 --timeframe 1wk
-python stockscan.py stock TCS.NS 2024-01-15 --timeframe 1mo
-python stockscan.py stock RELIANCE.NS 2024-01-15 --timeframe 1d
-python stockscan.py stock HDFCBANK.BO 2024-01-15 --timeframe 1wk
+python stockscan.py stock TSLA 2025-06-10 --timeframe 1wk
+python stockscan.py stock TCS.NS 2024-12-20 --timeframe 1mo
+python stockscan.py stock INFY.NS 2023-08-05 --timeframe 1d
+python stockscan.py stock HDFCBANK.BO 2024-03-18 --timeframe 1wk
 ```
 
 **Crypto:**
@@ -525,21 +525,21 @@ python stockscan.py stock AAPL 2024-01-15 --timeframe 1wk
 
 ### Check Indian Stock NSE (Monthly)
 ```bash
-python stockscan.py stock TCS.NS 2024-01-15 --timeframe 1mo
+python stockscan.py stock TCS.NS 2024-12-20 --timeframe 1mo
 # Output: ₹3,712.45 (Close price)
 # Change: +₹245.30 (+7.08%)
 ```
 
 ### Check Indian Stock NSE (Daily)
 ```bash
-python stockscan.py stock RELIANCE.NS 2024-01-15 --timeframe 1d
-# Output: ₹2,456.80 (Close price)
-# Change: +₹12.50 (+0.51%)
+python stockscan.py stock INFY.NS 2023-08-05 --timeframe 1d
+# Output: ₹1,542.30 (Close price)
+# Change: +₹18.75 (+1.23%)
 ```
 
 ### Check Indian Stock BSE (Weekly)
 ```bash
-python stockscan.py stock HDFCBANK.BO 2024-01-15 --timeframe 1wk
+python stockscan.py stock HDFCBANK.BO 2024-03-18 --timeframe 1wk
 # Output: ₹1,598.25 (Close price)
 # Change: +₹45.60 (+2.94%)
 ```

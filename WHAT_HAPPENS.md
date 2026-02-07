@@ -81,7 +81,7 @@ You'll see this question:
 ──────────────────────────────────────────────────────────────────────
 Which market do you want to check?
 
-  [1] Stocks       (AAPL, TSLA, RELIANCE.NS, HDFCBANK.BO, etc.)
+  [1] Stocks       (AAPL, TSLA, INFY.NS, HDFCBANK.BO, etc.)
   [2] Crypto       (BTCUSDT, ETHUSDT, etc.)
   [3] Commodities  (GLD, USO, CORN, etc.)
   [Q] Quit
@@ -108,10 +108,10 @@ STOCK PRICE LOOKUP
 Syntax: <SYMBOL> <DATE>
 Examples:
   AAPL 2026-01-15
-  TSLA 2026-01-10
+  TSLA 2025-06-10
   TCS.NS 2024-12-20
-  RELIANCE.NS 2024-12-20
-  HDFCBANK.BO 2024-12-20
+  INFY.NS 2023-08-05
+  HDFCBANK.BO 2024-03-18
 
 Date format: YYYY-MM-DD
 Will ask for timeframe after you enter

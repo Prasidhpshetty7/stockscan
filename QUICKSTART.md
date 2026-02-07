@@ -85,10 +85,10 @@ cd stockscan
 **For Stocks:**
 ```bash
 python stockscan.py stock AAPL 2026-01-15 --timeframe 1d
-python stockscan.py stock TSLA 2024-12-20 --timeframe 1wk
-python stockscan.py stock TCS.NS 2024-01-15 --timeframe 1mo
-python stockscan.py stock RELIANCE.NS 2024-01-15 --timeframe 1d
-python stockscan.py stock HDFCBANK.BO 2024-01-15 --timeframe 1wk
+python stockscan.py stock TSLA 2025-06-10 --timeframe 1wk
+python stockscan.py stock TCS.NS 2024-12-20 --timeframe 1mo
+python stockscan.py stock INFY.NS 2023-08-05 --timeframe 1d
+python stockscan.py stock HDFCBANK.BO 2024-03-18 --timeframe 1wk
 ```
 
 **For Crypto:**

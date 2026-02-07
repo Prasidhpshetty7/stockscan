@@ -259,11 +259,11 @@ def print_usage():
   python stockscan.py crypto ETHUSDT 2024-01-15 --timeframe 1d
 
   {GREEN}# Get stock price with timeframe{RESET}
-  python stockscan.py stock AAPL 2024-01-15 --timeframe 1d
-  python stockscan.py stock TSLA 2024-01-10 --timeframe 1wk
-  python stockscan.py stock TCS.NS 2024-01-15 --timeframe 1mo
-  python stockscan.py stock RELIANCE.NS 2024-01-15 --timeframe 1d
-  python stockscan.py stock HDFCBANK.BO 2024-01-15 --timeframe 1wk
+  python stockscan.py stock AAPL 2026-01-15 --timeframe 1d
+  python stockscan.py stock TSLA 2025-06-10 --timeframe 1wk
+  python stockscan.py stock TCS.NS 2024-12-20 --timeframe 1mo
+  python stockscan.py stock INFY.NS 2023-08-05 --timeframe 1d
+  python stockscan.py stock HDFCBANK.BO 2024-03-18 --timeframe 1wk
 
   {GREEN}# Get commodity price with timeframe{RESET}
   python stockscan.py commodity GLD 2024-01-15 --timeframe 1d
@@ -1437,7 +1437,7 @@ def interactive_mode():
         # Ask which market
         print(f"\n{CYAN}{'─' * 70}{RESET}")
         print(f"{BOLD}{BRIGHT_PURPLE}Which market do you want to check?{RESET}\n")
-        print(f"  {GREEN}[1]{RESET} Stocks       (AAPL, TSLA, RELIANCE.NS, HDFCBANK.BO, etc.)")
+        print(f"  {GREEN}[1]{RESET} Stocks       (AAPL, TSLA, INFY.NS, HDFCBANK.BO, etc.)")
         print(f"  {GREEN}[2]{RESET} Crypto       (BTCUSDT, ETHUSDT, etc.)")
         print(f"  {GREEN}[3]{RESET} Commodities  (GLD, USO, CORN, etc.)")
         print(f"  {YELLOW}[Q]{RESET} Quit\n")
@@ -1460,10 +1460,10 @@ def interactive_mode():
             print(f"{CYAN}Syntax:{RESET} {GREEN}<SYMBOL> <DATE>{RESET}")
             print(f"{CYAN}Examples:{RESET}")
             print(f"  AAPL 2026-01-15")
-            print(f"  TSLA 2026-01-10")
+            print(f"  TSLA 2025-06-10")
             print(f"  TCS.NS 2024-12-20")
-            print(f"  RELIANCE.NS 2024-12-20")
-            print(f"  HDFCBANK.BO 2024-12-20\n")
+            print(f"  INFY.NS 2023-08-05")
+            print(f"  HDFCBANK.BO 2024-03-18\n")
             print(f"{DIM}Date format: YYYY-MM-DD{RESET}")
             print(f"{DIM}Will ask for timeframe after you enter{RESET}")
             print(f"{DIM}Type 'back' to return to market selection{RESET}\n")
