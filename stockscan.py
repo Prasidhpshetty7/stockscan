@@ -240,8 +240,9 @@ def print_description():
     - Works out of the box!
 
 {CYAN}Coverage:{RESET}
-  • All major large-cap and mid-cap stocks
-  • All NIFTY 50 and BSE Sensex stocks
+  • All NASDAQ, NYSE, AMEX stocks (5000+ US stocks)
+  • All NSE stocks (1000+ Indian stocks)
+  • All BSE stocks (1000+ Indian stocks)
   • 1000+ crypto pairs on Binance
   • 130+ commodity ETFs
 """
