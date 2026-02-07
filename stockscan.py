@@ -1416,7 +1416,7 @@ def interactive_mode():
         # Ask which market
         print(f"\n{CYAN}{'─' * 70}{RESET}")
         print(f"{BOLD}{BRIGHT_PURPLE}Which market do you want to check?{RESET}\n")
-        print(f"  {GREEN}[1]{RESET} Stocks       (AAPL, TSLA, RELIANCE.NS, TCS.NS, etc.)")
+        print(f"  {GREEN}[1]{RESET} Stocks       (AAPL, TSLA, RELIANCE.NS, HDFCBANK.BO, etc.)")
         print(f"  {GREEN}[2]{RESET} Crypto       (BTCUSDT, ETHUSDT, etc.)")
         print(f"  {GREEN}[3]{RESET} Commodities  (GLD, USO, CORN, etc.)")
         print(f"  {YELLOW}[Q]{RESET} Quit\n")
@@ -1440,8 +1440,9 @@ def interactive_mode():
             print(f"{CYAN}Examples:{RESET}")
             print(f"  AAPL 2026-01-15     {DIM}(US stock - Will ask for timeframe){RESET}")
             print(f"  AAPL 2026-01-15 1d  {DIM}(US stock - Direct with timeframe){RESET}")
-            print(f"  RELIANCE.NS 2024-12-20     {DIM}(Indian stock - Will ask for timeframe){RESET}")
-            print(f"  TCS.NS 2024-12-20 1wk {DIM}(Indian stock - Weekly candle){RESET}\n")
+            print(f"  TCS.NS 2024-12-20 1wk {DIM}(Indian NSE stock - Weekly candle){RESET}")
+            print(f"  RELIANCE.NS 2024-12-20     {DIM}(Indian NSE stock - Will ask for timeframe){RESET}")
+            print(f"  HDFCBANK.BO 2024-12-20 1d {DIM}(Indian BSE stock - Daily candle){RESET}\n")
             print(f"{DIM}Date format: YYYY-MM-DD{RESET}")
             print(f"{DIM}Type 'back' to return to market selection{RESET}\n")
             
