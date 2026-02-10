@@ -1492,7 +1492,13 @@ def export_data_mode():
             print(f"{BOLD}{BRIGHT_PURPLE}EXPORT COMMODITY DATA TO CSV{RESET}\n")
         
         # Get symbol
-        symbol = input(f"{CYAN}Enter symbol (e.g., BTCUSDT):{RESET} ").strip().upper()
+        if market_type == 'CRYPTO':
+            symbol = input(f"{CYAN}Enter symbol (e.g., BTCUSDT):{RESET} ").strip().upper()
+        elif market_type == 'STOCK':
+            symbol = input(f"{CYAN}Enter symbol (e.g., AAPL, TSLA, INFY.NS):{RESET} ").strip().upper()
+        else:
+            symbol = input(f"{CYAN}Enter symbol (e.g., GLD, USO, CORN):{RESET} ").strip().upper()
+        
         if not symbol:
             print(f"{RED}⚠ Symbol cannot be empty!{RESET}")
             continue
@@ -1586,20 +1592,27 @@ def export_data_mode():
         try:
             all_data = []
             
+            # Parse dates
+            start_dt = datetime.strptime(start_date, "%Y-%m-%d")
+            end_dt = datetime.strptime(end_date, "%Y-%m-%d")
+            
+            # Check if future
+            if start_dt > datetime.now() or end_dt > datetime.now():
+                print(f"{RED}✗ Error: Cannot fetch future data{RESET}")
+                continue
+            
+            # Add +1 day to end_date to make it inclusive (unless it's today)
+            fetch_end_dt = end_dt
+            added_day = False
+            if end_dt.date() < datetime.now().date():
+                fetch_end_dt = end_dt + timedelta(days=1)
+                added_day = True
+            
             if market_type == 'CRYPTO':
                 # Crypto export using Binance
-                # Parse dates
-                start_dt = datetime.strptime(start_date, "%Y-%m-%d")
-                end_dt = datetime.strptime(end_date, "%Y-%m-%d")
-                
-                # Check if future
-                if start_dt > datetime.now() or end_dt > datetime.now():
-                    print(f"{RED}✗ Error: Cannot fetch future data{RESET}")
-                    continue
-                
                 # Convert to milliseconds
                 start_ms = int(start_dt.timestamp() * 1000)
-                end_ms = int(end_dt.timestamp() * 1000)
+                end_ms = int(fetch_end_dt.timestamp() * 1000)
                 
                 # Fetch data from Binance
                 url = f"{BINANCE_BASE}/klines"
@@ -1654,9 +1667,9 @@ def export_data_mode():
                 
                 interval = interval_map[timeframe]
                 
-                # Fetch data
+                # Fetch data with adjusted end date
                 ticker = yf.Ticker(symbol)
-                df = ticker.history(start=start_date, end=end_date, interval=interval)
+                df = ticker.history(start=start_date, end=fetch_end_dt.strftime("%Y-%m-%d"), interval=interval)
                 
                 if df.empty:
                     print(f"{RED}✗ No data found for {symbol}{RESET}")
@@ -1687,11 +1700,20 @@ def export_data_mode():
             excluded_days_msg = ""
             if timeframe in ['1d'] and market_type in ['STOCK', 'COMMODITY']:
                 # Calculate expected trading days
-                start_dt = datetime.strptime(start_date, "%Y-%m-%d")
-                end_dt = datetime.strptime(end_date, "%Y-%m-%d")
                 total_days = (end_dt - start_dt).days + 1
                 actual_days = len(all_data)
-                excluded_days = total_days - actual_days
+                
+                # Check if we got data for the end date (means it was a trading day)
+                last_data_date = datetime.strptime(all_data[-1]['timestamp'].split()[0], "%Y-%m-%d").date()
+                end_date_included = (last_data_date == end_dt.date())
+                
+                # If we added a day and got the end date data, adjust expected days
+                if added_day and end_date_included:
+                    # End date was a trading day, so our +1 worked correctly
+                    excluded_days = total_days - actual_days
+                else:
+                    # End date was not a trading day (holiday/weekend) or we didn't add a day
+                    excluded_days = total_days - actual_days
                 
                 if excluded_days > 0:
                     excluded_days_msg = f" ({excluded_days} day(s) excluded: weekends/holidays)"
@@ -1740,8 +1762,8 @@ def interactive_mode():
         # Ask what user wants to do
         print(f"\n{CYAN}{'─' * 70}{RESET}")
         print(f"{BOLD}{BRIGHT_PURPLE}What would you like to do?{RESET}\n")
-        print(f"  {GREEN}[1]{RESET} Check Prices     - Look up historical prices")
-        print(f"  {GREEN}[2]{RESET} Export Data      - Download bulk data to CSV")
+        print(f"  {GREEN}[1]{RESET} Export Data      - Download bulk data to CSV")
+        print(f"  {GREEN}[2]{RESET} Check Prices     - Look up historical prices")
         print(f"  {YELLOW}[Q]{RESET} Quit\n")
         
         main_choice = input(f"{CYAN}Enter your choice (1/2/Q):{RESET} ").strip().upper()
@@ -1751,11 +1773,11 @@ def interactive_mode():
             break
         
         if main_choice not in ['1', '2']:
-            print(f"\n{RED}⚠ Invalid choice! Please enter 1 for Check Prices, 2 for Export Data, or Q to quit.{RESET}")
+            print(f"\n{RED}⚠ Invalid choice! Please enter 1 for Export Data, 2 for Check Prices, or Q to quit.{RESET}")
             continue
         
         # If user chose Export Data
-        if main_choice == '2':
+        if main_choice == '1':
             export_data_mode()
             continue
         
