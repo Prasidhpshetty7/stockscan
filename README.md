@@ -20,7 +20,7 @@ Plus, it now lets you **compare with current prices** and see your potential pro
 - 📈 **Price Comparison**: See P&L, percentage change, and profit/loss between historical and current prices
 - 🎨 **Beautiful Output**: Clean, colorful terminal display
 
-**NEW:** 📊 **[Data Exporter Tool](EXPORTER_README.md)** - Export bulk historical data to CSV for backtesting!
+**NEW:** 📊 **Data Exporter Tool** - Export bulk historical data to CSV for backtesting!
 
 ---
 
@@ -674,8 +674,7 @@ plt.show()
 
 ## 📚 Documentation
 
-- **[QUICKSTART.md](QUICKSTART.md)** - Step-by-step guide for beginners
-- **[WHAT_HAPPENS.md](WHAT_HAPPENS.md)** - Visual walkthrough
+- **[QUICKSTART.md](QUICKSTART.md)** - Step-by-step guide with examples
 - Run `python stockscan.py help` - See all commands
 
 ---
@@ -1067,9 +1066,7 @@ stockscan/
 ├── stockscan.py              # Main price lookup tool
 ├── stockscan_exporter.py     # CSV export & backtesting tool
 ├── README.md                 # Main documentation
-├── QUICKSTART.md             # Beginner's guide
-├── WHAT_HAPPENS.md           # Visual walkthrough
-├── EXPORTER_README.md        # Data exporter guide
+├── QUICKSTART.md             # Quick start guide
 ├── LICENSE                   # MIT License
 └── exports/                  # CSV files (created when you export)
 ```
@@ -1103,9 +1100,8 @@ If you find StockScan useful, give it a star! ⭐
 ## 📞 Support
 
 Having issues? Check out:
-1. [QUICKSTART.md](QUICKSTART.md) - Beginner's guide
-2. [WHAT_HAPPENS.md](WHAT_HAPPENS.md) - Visual walkthrough
-3. Open an issue on GitHub
+1. [QUICKSTART.md](QUICKSTART.md) - Quick start guide
+2. Open an issue on GitHub
 
 ---
 

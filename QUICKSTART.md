@@ -57,7 +57,60 @@ or
 py stockscan.py
 ```
 
-## Step 5: You See This Beautiful Banner
+## Step 5: Using StockScan
+
+### Interactive Mode (Easiest)
+
+Run without arguments:
+```bash
+python stockscan.py
+```
+
+**What happens:**
+
+1. **You see the banner** - Big purple STOCKSCAN logo with description
+
+2. **Choose market** - Press `1` for Stocks, `2` for Crypto, `3` for Commodities, or `Q` to quit
+
+3. **Enter your lookup** - Type symbol and date (e.g., `AAPL 2026-01-15`)
+
+4. **Select timeframe** - Choose from the menu (1d, 1wk, 1mo for stocks)
+
+5. **See the price!** - Beautiful output with OHLCV data and price movement
+
+6. **More options menu** - After viewing price:
+   - `[1]` Check Live Price - See current market price
+   - `[2]` Compare with Current - See P&L and percentage change
+   - `[3]` Continue - Check another asset
+
+**Example output:**
+```
+──────────────────────────────────────────────────────────────────────
+STOCKSCAN - STOCK PRICE LOOKUP
+──────────────────────────────────────────────────────────────────────
+
+ASSET:           AAPL
+MARKET:          Stocks (Yahoo Finance)
+REQUESTED DATE:  2026-01-15
+TIMEFRAME:       Daily
+
+Candle Date:    2026-01-15
+
+CANDLE DATA:
+  Open:   $260.65
+  High:   $261.04
+  Low:    $257.05
+  Close:  $258.21  ← Price at that date
+  Volume: 39,388,600
+
+PRICE MOVEMENT:
+  Change:     -$2.44
+  Percentage: -0.94%
+```
+
+Then you can check live price or compare with current price to see profit/loss!
+
+---
 1. You'll see a big purple STOCKSCAN banner
 2. It asks: "Which market do you want to check?"
    - Press `1` for Stocks
@@ -69,9 +122,16 @@ py stockscan.py
 
 4. You type your lookup (example: `AAPL 2026-01-15`)
 
-5. It shows you the price!
+5. Select timeframe from the menu
 
-6. Press Enter to check another price, or type `back` to change markets
+6. It shows you the price with OHLCV data and price movement!
+
+7. You get 3 options:
+   - Check live price
+   - Compare with current price (see P&L)
+   - Continue to check another
+
+8. Press Enter to check another price, or type `back` to change markets
 
 ---
 
