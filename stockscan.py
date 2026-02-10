@@ -1683,6 +1683,19 @@ def export_data_mode():
             
             print(f"{GREEN}✓ Total: {len(all_data)} candles fetched{RESET}\n")
             
+            # Calculate expected vs actual days for daily timeframe
+            excluded_days_msg = ""
+            if timeframe in ['1d'] and market_type in ['STOCK', 'COMMODITY']:
+                # Calculate expected trading days
+                start_dt = datetime.strptime(start_date, "%Y-%m-%d")
+                end_dt = datetime.strptime(end_date, "%Y-%m-%d")
+                total_days = (end_dt - start_dt).days + 1
+                actual_days = len(all_data)
+                excluded_days = total_days - actual_days
+                
+                if excluded_days > 0:
+                    excluded_days_msg = f" ({excluded_days} day(s) excluded: weekends/holidays)"
+            
             # Create exports directory
             os.makedirs("exports", exist_ok=True)
             
@@ -1700,7 +1713,7 @@ def export_data_mode():
             
             print(f"{GREEN}✓ Data exported successfully!{RESET}")
             print(f"{CYAN}File:{RESET} {filepath}")
-            print(f"{CYAN}Rows:{RESET} {len(all_data)}")
+            print(f"{CYAN}Rows:{RESET} {len(all_data)}{excluded_days_msg}")
             print(f"{CYAN}Symbol:{RESET} {symbol}")
             print(f"{CYAN}Timeframe:{RESET} {timeframe}\n")
             
