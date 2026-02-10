@@ -31,7 +31,7 @@ Download `stockscan.py` from this repository
 
 ### 2. Install Requirements
 ```bash
-pip install requests
+pip install requests yfinance
 ```
 
 ### 3. Run It!
@@ -81,11 +81,19 @@ py stockscan.py
 
 You'll see:
 1. ✨ Big purple STOCKSCAN banner
-2. 📋 Choose: `[1] Stocks` or `[2] Crypto` or `[3] Commodities`
-3. 📝 Enter your lookup (e.g., `AAPL 2026-01-15` or `BTCUSDT 2026-01-15` or `GLD 2026-01-15`)
-4. 🕐 Select timeframe (interactive prompt)
-5. ⏰ For crypto intraday: Enter custom start time (e.g., 14:39)
-6. 💵 Get the price instantly!
+2. 🎯 Main menu: Choose `[1] Check Prices` or `[2] Export Data`
+3. **If Check Prices:**
+   - 📋 Choose: `[1] Stocks` or `[2] Crypto` or `[3] Commodities`
+   - 📝 Enter your lookup (e.g., `AAPL 2026-01-15` or `BTCUSDT 2026-01-15` or `GLD 2026-01-15`)
+   - 🕐 Select timeframe (interactive prompt)
+   - ⏰ For crypto intraday: Enter custom start time (e.g., 14:39)
+   - 💵 Get the price instantly!
+4. **If Export Data:**
+   - 📋 Choose market: `[1] Crypto` or `[2] Stocks` or `[3] Commodities`
+   - 📝 Enter symbol (e.g., `BTCUSDT`, `AAPL`, `GLD`)
+   - 📅 Enter start date and end date (YYYY-MM-DD)
+   - 🕐 Select timeframe
+   - 💾 Data automatically downloads to `exports/` folder as CSV
 
 ### Command Line Mode (Fastest)
 
@@ -339,6 +347,7 @@ Note: This uses OHLCV candle logic. The CLOSE price of the candle
 ✅ **Live Price Checking** - Check current market price after viewing historical data  
 ✅ **Price Comparison** - Compare historical price with current price, see P&L and percentage change  
 ✅ **Price Movement Calculator** - Shows change and percentage gain/loss  
+✅ **Data Export to CSV** - Export bulk historical data for backtesting (integrated feature)  
 ✅ **Smart Holiday Detection** - Warns about weekends and holidays in the period  
 ✅ **Smart Error Messages** - Clear warnings about unsupported symbols (very small-cap stocks, new IPOs)  
 ✅ **Beautiful UI** - Colorful terminal output with color-coded gains/losses  
@@ -482,9 +491,9 @@ Please verify the symbol is correct and the company has sufficient trading histo
 
 ## � Bonus: Data Exporter Tool
 
-## 📊 Data Exporter Tool - CSV Export & Backtesting
+## 📊 Data Exporter - CSV Export & Backtesting
 
-StockScan includes a **separate companion tool** for exporting bulk historical data to CSV files!
+StockScan includes an **integrated data export feature** for downloading bulk historical data to CSV files!
 
 ### 🎯 What Does It Do?
 
@@ -499,16 +508,20 @@ The Data Exporter lets you:
 
 ```bash
 cd stockscan
-python stockscan_exporter.py
+python stockscan.py
 ```
 
-Then follow the prompts:
-```
-Enter symbol (e.g., BTCUSDT): BTCUSDT
-Enter start date (YYYY-MM-DD): 2024-01-01
-Enter end date (YYYY-MM-DD): 2024-12-31
-Select timeframe (1-7): 6
+Then:
+1. Choose `[2] Export Data` from main menu
+2. Select market (Crypto/Stocks/Commodities)
+3. Enter symbol (e.g., `BTCUSDT`, `AAPL`, `GLD`)
+4. Enter start date (e.g., `2024-01-01`)
+5. Enter end date (e.g., `2024-12-31`)
+6. Select timeframe
+7. Data automatically downloads!
 
+**Example output:**
+```
 Fetching data for BTCUSDT from 2024-01-01 to 2024-12-31...
 Fetched 365 candles...
 ✓ Total: 365 candles fetched
@@ -516,6 +529,8 @@ Fetched 365 candles...
 ✓ Data exported successfully!
 File: exports/BTCUSDT_1d_2024-01-01_to_2024-12-31.csv
 Rows: 365
+Symbol: BTCUSDT
+Timeframe: 1d
 ```
 
 ### 📁 CSV File Format
@@ -539,17 +554,22 @@ timestamp,open,high,low,close,volume,close_time
 2024-01-02 00:00:00,42300.75,42800.00,42200.00,42650.25,1380.20,2024-01-02 23:59:59
 ```
 
-### 🔧 Supported Timeframes
+### 🔧 Supported Markets & Timeframes
 
-| Timeframe | Description | Best For |
-|-----------|-------------|----------|
-| `1m` | 1 minute | High-frequency trading, scalping |
-| `5m` | 5 minutes | Day trading, short-term analysis |
-| `15m` | 15 minutes | Intraday trading |
-| `1h` | 1 hour | Swing trading, medium-term |
-| `4h` | 4 hours | Position trading |
-| `1d` | Daily | Long-term analysis, backtesting |
-| `1w` | Weekly | Long-term strategies |
+**Crypto (Binance):**
+- All 16 Binance timeframes: 1s, 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M
+- 1000+ trading pairs
+- No API key needed
+
+**Stocks (Yahoo Finance):**
+- 3 timeframes: 1d, 1wk, 1mo
+- All US & Indian stocks
+- Requires `yfinance` library
+
+**Commodities (Yahoo Finance):**
+- 3 timeframes: 1d, 1wk, 1mo
+- 98+ commodity ETFs
+- Requires `yfinance` library
 
 ### 💡 Use Cases
 
@@ -618,9 +638,9 @@ plt.show()
 
 **Step-by-Step Process:**
 
-1. **User Input** - You provide symbol, date range, timeframe
-2. **Data Fetching** - Tool connects to Binance API and fetches data in batches
-3. **Progress Display** - Shows "Fetched 1000 candles..." as it works
+1. **User Input** - You provide symbol, date range, timeframe from main menu
+2. **Data Fetching** - Tool connects to Binance/Yahoo Finance API and fetches data in batches
+3. **Progress Display** - Shows "Fetched X candles..." as it works
 4. **Data Processing** - Converts timestamps and organizes data
 5. **CSV Export** - Saves to `exports/` folder with clear filename
 6. **Result** - You get a clean CSV file ready for analysis
@@ -629,8 +649,9 @@ plt.show()
 - ✅ Automatic pagination for large date ranges
 - ✅ Progress display during fetch
 - ✅ Clean CSV format ready for any tool
-- ✅ No API keys needed (uses free Binance API)
+- ✅ No API keys needed (uses free APIs)
 - ✅ Organized output in `exports/` folder
+- ✅ Integrated into main StockScan tool
 
 ### 📈 Why Is This Useful?
 
@@ -654,21 +675,23 @@ plt.show()
 
 ### ⚠️ Important Notes
 
-- Binance API returns max 1000 candles per request
+- Binance API returns max 1000 candles per request (crypto only)
 - Tool automatically handles pagination for larger ranges
 - Very large date ranges may take a few minutes
-- Data comes directly from Binance (same as professional traders use)
+- Crypto data comes from Binance (same as professional traders use)
+- Stock/Commodity data comes from Yahoo Finance
+- `yfinance` library required for stocks/commodities export
 
-### 🔄 Difference from Main StockScan
+### 🔄 Difference from Price Checking
 
-| Feature | StockScan (Main) | Data Exporter |
-|---------|------------------|---------------|
+| Feature | Check Prices | Export Data |
+|---------|--------------|-------------|
 | Purpose | Check single price at specific time | Export bulk data for analysis |
 | Output | Terminal display | CSV files |
 | Use Case | Quick price lookups | Backtesting, ML, analysis |
 | Data Amount | Single candle | Thousands of candles |
 
-**Both tools are completely independent!**
+**Both features are integrated into one tool!**
 
 ---
 
@@ -1037,9 +1060,13 @@ A: Very accurate! Data comes directly from Binance and Yahoo Finance.
 ## 🛠️ Requirements
 
 - Python 3.7 or higher
-- `requests` library (install with `pip install requests`)
+- `requests` library (required for all features)
+- `yfinance` library (required only for stock/commodity export)
 
-That's it!
+**Install both:**
+```bash
+pip install requests yfinance
+```
 
 ---
 

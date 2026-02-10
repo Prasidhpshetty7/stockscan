@@ -28,16 +28,18 @@ If you don't have Python, download it from: https://www.python.org/downloads/
 Open your terminal/command prompt and run:
 
 ```bash
-pip install requests
+pip install requests yfinance
 ```
 
 or
 
 ```bash
-python -m pip install requests
+python -m pip install requests yfinance
 ```
 
-That's it! Only one library needed.
+**What are these libraries?**
+- `requests` - Required for all features (price checking & crypto export)
+- `yfinance` - Required only for stock/commodity data export (optional)
 
 ---
 
@@ -70,18 +72,29 @@ python stockscan.py
 
 1. **You see the banner** - Big purple STOCKSCAN logo with description
 
-2. **Choose market** - Press `1` for Stocks, `2` for Crypto, `3` for Commodities, or `Q` to quit
+2. **Choose what to do** - Main menu appears:
+   - `[1]` Check Prices - Look up historical prices
+   - `[2]` Export Data - Download bulk data to CSV
+   - `[Q]` Quit
 
-3. **Enter your lookup** - Type symbol and date (e.g., `AAPL 2026-01-15`)
+3. **If you choose Check Prices (Option 1):**
+   - Choose market: `1` for Stocks, `2` for Crypto, `3` for Commodities
+   - Enter your lookup (e.g., `AAPL 2026-01-15`)
+   - Select timeframe from the menu
+   - See the price with OHLCV data and price movement
+   - Get 3 more options:
+     - `[1]` Check Live Price - See current market price
+     - `[2]` Compare with Current - See P&L and percentage change
+     - `[3]` Continue - Check another asset
 
-4. **Select timeframe** - Choose from the menu (1d, 1wk, 1mo for stocks)
-
-5. **See the price!** - Beautiful output with OHLCV data and price movement
-
-6. **More options menu** - After viewing price:
-   - `[1]` Check Live Price - See current market price
-   - `[2]` Compare with Current - See P&L and percentage change
-   - `[3]` Continue - Check another asset
+4. **If you choose Export Data (Option 2):**
+   - Choose market: `1` for Crypto, `2` for Stocks, `3` for Commodities
+   - Enter symbol (e.g., `BTCUSDT`, `AAPL`, `GLD`)
+   - Enter start date (e.g., `2024-01-01`)
+   - Enter end date (e.g., `2024-12-31`)
+   - Select timeframe (16 options for crypto, 3 for stocks/commodities)
+   - Data automatically downloads to `exports/` folder as CSV
+   - Shows success message with file location and row count
 
 **Example output:**
 ```
@@ -109,6 +122,17 @@ PRICE MOVEMENT:
 ```
 
 Then you can check live price or compare with current price to see profit/loss!
+
+**Example CSV export:**
+```
+✓ Data exported successfully!
+File: exports/BTCUSDT_1d_2024-01-01_to_2024-12-31.csv
+Rows: 365
+Symbol: BTCUSDT
+Timeframe: 1d
+```
+
+The CSV file contains: timestamp, open, high, low, close, volume, close_time
 
 ---
 1. You'll see a big purple STOCKSCAN banner
@@ -497,14 +521,9 @@ A: StockScan doesn't cover:
 
 ---
 
-## 📊 Bonus: Export Data for Backtesting
+## 📊 Data Export Feature
 
-Want to export bulk historical data to CSV files? Use the **Data Exporter Tool**!
-
-```bash
-cd stockscan
-python stockscan_exporter.py
-```
+Want to export bulk historical data to CSV files? Just choose option `[2] Export Data` from the main menu!
 
 **What it does:**
 - Export thousands of candles at once
@@ -512,17 +531,21 @@ python stockscan_exporter.py
 - Perfect for backtesting strategies
 - Works with Python, Excel, R, etc.
 
-**Example:**
-```
-Enter symbol: BTCUSDT
-Enter start date: 2024-01-01
-Enter end date: 2024-12-31
-Select timeframe: 6 (daily)
+**How to use:**
+1. Run: `python stockscan.py`
+2. Choose: `[2] Export Data`
+3. Select market (Crypto/Stocks/Commodities)
+4. Enter symbol, start date, end date, timeframe
+5. Data automatically downloads to `exports/` folder
 
-✓ Data exported to: exports/BTCUSDT_1d_2024-01-01_to_2024-12-31.csv
-```
+**CSV format:**
+- timestamp, open, high, low, close, volume, close_time
+- Ready for backtesting and analysis
+- Compatible with all data analysis tools
 
-See the **Data Exporter section in README.md** for full details, use cases, and code examples!
+**Supported timeframes:**
+- Crypto: 16 timeframes (1s to 1M)
+- Stocks/Commodities: 3 timeframes (1d, 1wk, 1mo)
 
 ---
 
@@ -549,7 +572,7 @@ You're ready to use StockScan! 🎉
 **Summary:**
 1. Download `stockscan.py`
 2. Install Python (if needed)
-3. Run: `pip install requests`
+3. Run: `pip install requests yfinance`
 4. Navigate: `cd stockscan`
 5. Run: `python stockscan.py` (or `py stockscan.py`)
 6. Follow the prompts!

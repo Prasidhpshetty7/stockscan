@@ -25,6 +25,13 @@ except ImportError:
     print("Or: python -m pip install requests\n")
     sys.exit(1)
 
+# Try to import yfinance for stock/commodity exports
+try:
+    import yfinance as yf
+    YFINANCE_AVAILABLE = True
+except ImportError:
+    YFINANCE_AVAILABLE = False
+
 # ANSI Color Codes (Purple Theme)
 PURPLE = '\033[95m'
 BRIGHT_PURPLE = '\033[1;35m'
@@ -1428,28 +1435,333 @@ def show_more_options_menu(result: Dict[str, Any], symbol: str, market_type: str
             print(f"{RED}⚠ Invalid choice! Please enter 1, 2, or 3{RESET}")
 
 
+def export_data_mode():
+    """Export data mode - download bulk historical data to CSV"""
+    import csv
+    import os
+    
+    # Show export banner
+    print(f"\n{CYAN}{'═' * 70}{RESET}")
+    print(f"{BOLD}{BRIGHT_PURPLE}STOCKSCAN DATA EXPORTER - CSV EXPORT & BACKTESTING{RESET}")
+    print(f"{CYAN}{'═' * 70}{RESET}\n")
+    print(f"{CYAN}What does this do?{RESET}")
+    print(f"  • Export thousands of candles at once")
+    print(f"  • Download data for any date range")
+    print(f"  • Save to CSV files for analysis")
+    print(f"  • Perfect for backtesting trading strategies\n")
+    print(f"{GREEN}✅ NO API KEYS NEEDED!{RESET}\n")
+    
+    while True:
+        # Ask which market
+        print(f"{CYAN}{'─' * 70}{RESET}")
+        print(f"{BOLD}{BRIGHT_PURPLE}Which market data do you want to export?{RESET}\n")
+        print(f"  {GREEN}[1]{RESET} Crypto       (Binance - 1000+ pairs)")
+        print(f"  {GREEN}[2]{RESET} Stocks       (Yahoo Finance - US & Indian)")
+        print(f"  {GREEN}[3]{RESET} Commodities  (Yahoo Finance - 98+ ETFs)")
+        print(f"  {YELLOW}[B]{RESET} Back to main menu\n")
+        
+        market_choice = input(f"{CYAN}Enter your choice (1/2/3/B):{RESET} ").strip().upper()
+        
+        if market_choice == 'B':
+            return
+        
+        if market_choice not in ['1', '2', '3']:
+            print(f"\n{RED}⚠ Invalid choice!{RESET}")
+            continue
+        
+        # Determine market type
+        if market_choice == '1':
+            market_type = 'CRYPTO'
+            print(f"\n{CYAN}{'─' * 70}{RESET}")
+            print(f"{BOLD}{BRIGHT_PURPLE}EXPORT CRYPTO DATA TO CSV{RESET}\n")
+        elif market_choice == '2':
+            market_type = 'STOCK'
+            if not YFINANCE_AVAILABLE:
+                print(f"\n{RED}✗ Error: 'yfinance' library not installed{RESET}")
+                print(f"{YELLOW}Install it with: pip install yfinance{RESET}")
+                continue
+            print(f"\n{CYAN}{'─' * 70}{RESET}")
+            print(f"{BOLD}{BRIGHT_PURPLE}EXPORT STOCK DATA TO CSV{RESET}\n")
+        else:
+            market_type = 'COMMODITY'
+            if not YFINANCE_AVAILABLE:
+                print(f"\n{RED}✗ Error: 'yfinance' library not installed{RESET}")
+                print(f"{YELLOW}Install it with: pip install yfinance{RESET}")
+                continue
+            print(f"\n{CYAN}{'─' * 70}{RESET}")
+            print(f"{BOLD}{BRIGHT_PURPLE}EXPORT COMMODITY DATA TO CSV{RESET}\n")
+        
+        # Get symbol
+        symbol = input(f"{CYAN}Enter symbol (e.g., BTCUSDT):{RESET} ").strip().upper()
+        if not symbol:
+            print(f"{RED}⚠ Symbol cannot be empty!{RESET}")
+            continue
+        
+        # Get start date
+        start_date = input(f"{CYAN}Enter start date (YYYY-MM-DD):{RESET} ").strip()
+        try:
+            from datetime import datetime
+            datetime.strptime(start_date, "%Y-%m-%d")
+        except ValueError:
+            print(f"{RED}⚠ Invalid date format! Use YYYY-MM-DD{RESET}")
+            continue
+        
+        # Get end date
+        end_date = input(f"{CYAN}Enter end date (YYYY-MM-DD):{RESET} ").strip()
+        try:
+            datetime.strptime(end_date, "%Y-%m-%d")
+        except ValueError:
+            print(f"{RED}⚠ Invalid date format! Use YYYY-MM-DD{RESET}")
+            continue
+        
+        # Get timeframe based on market type
+        if market_type == 'CRYPTO':
+            print(f"\n{CYAN}Available timeframes:{RESET}")
+            print(f"  {GREEN}[1]{RESET}  1s   - 1 second")
+            print(f"  {GREEN}[2]{RESET}  1m   - 1 minute")
+            print(f"  {GREEN}[3]{RESET}  3m   - 3 minutes")
+            print(f"  {GREEN}[4]{RESET}  5m   - 5 minutes")
+            print(f"  {GREEN}[5]{RESET}  15m  - 15 minutes")
+            print(f"  {GREEN}[6]{RESET}  30m  - 30 minutes")
+            print(f"  {GREEN}[7]{RESET}  1h   - 1 hour")
+            print(f"  {GREEN}[8]{RESET}  2h   - 2 hours")
+            print(f"  {GREEN}[9]{RESET}  4h   - 4 hours")
+            print(f"  {GREEN}[10]{RESET} 6h   - 6 hours")
+            print(f"  {GREEN}[11]{RESET} 8h   - 8 hours")
+            print(f"  {GREEN}[12]{RESET} 12h  - 12 hours")
+            print(f"  {GREEN}[13]{RESET} 1d   - 1 day")
+            print(f"  {GREEN}[14]{RESET} 3d   - 3 days")
+            print(f"  {GREEN}[15]{RESET} 1w   - 1 week")
+            print(f"  {GREEN}[16]{RESET} 1M   - 1 month\n")
+            
+            timeframe_map = {
+                '1': '1s',
+                '2': '1m',
+                '3': '3m',
+                '4': '5m',
+                '5': '15m',
+                '6': '30m',
+                '7': '1h',
+                '8': '2h',
+                '9': '4h',
+                '10': '6h',
+                '11': '8h',
+                '12': '12h',
+                '13': '1d',
+                '14': '3d',
+                '15': '1w',
+                '16': '1M'
+            }
+            
+            tf_choice = input(f"{CYAN}Select timeframe (1-16):{RESET} ").strip()
+            if tf_choice not in timeframe_map:
+                print(f"{RED}⚠ Invalid choice!{RESET}")
+                continue
+            
+            timeframe = timeframe_map[tf_choice]
+        else:
+            # Stocks and Commodities
+            print(f"\n{CYAN}Available timeframes:{RESET}")
+            print(f"  {GREEN}[1]{RESET}  1d   - Daily")
+            print(f"  {GREEN}[2]{RESET}  1wk  - Weekly")
+            print(f"  {GREEN}[3]{RESET}  1mo  - Monthly\n")
+            
+            timeframe_map = {
+                '1': '1d',
+                '2': '1wk',
+                '3': '1mo'
+            }
+            
+            tf_choice = input(f"{CYAN}Select timeframe (1-3):{RESET} ").strip()
+            if tf_choice not in timeframe_map:
+                print(f"{RED}⚠ Invalid choice!{RESET}")
+                continue
+            
+            timeframe = timeframe_map[tf_choice]
+        
+        # Fetch and export data
+        print(f"\n{CYAN}{'─' * 70}{RESET}\n")
+        print(f"{CYAN}Fetching data for {symbol} from {start_date} to {end_date}...{RESET}\n")
+        
+        try:
+            all_data = []
+            
+            if market_type == 'CRYPTO':
+                # Crypto export using Binance
+                # Parse dates
+                start_dt = datetime.strptime(start_date, "%Y-%m-%d")
+                end_dt = datetime.strptime(end_date, "%Y-%m-%d")
+                
+                # Check if future
+                if start_dt > datetime.now() or end_dt > datetime.now():
+                    print(f"{RED}✗ Error: Cannot fetch future data{RESET}")
+                    continue
+                
+                # Convert to milliseconds
+                start_ms = int(start_dt.timestamp() * 1000)
+                end_ms = int(end_dt.timestamp() * 1000)
+                
+                # Fetch data from Binance
+                url = f"{BINANCE_BASE}/klines"
+                params = {
+                    "symbol": symbol,
+                    "interval": timeframe,
+                    "startTime": start_ms,
+                    "endTime": end_ms,
+                    "limit": 1000
+                }
+                
+                while True:
+                    response = requests.get(url, params=params, timeout=10)
+                    response.raise_for_status()
+                    data = response.json()
+                    
+                    if not data:
+                        break
+                    
+                    # Process each candle
+                    for candle in data:
+                        candle_data = {
+                            "timestamp": datetime.fromtimestamp(candle[0] / 1000).strftime("%Y-%m-%d %H:%M:%S"),
+                            "open": float(candle[1]),
+                            "high": float(candle[2]),
+                            "low": float(candle[3]),
+                            "close": float(candle[4]),
+                            "volume": float(candle[5]),
+                            "close_time": datetime.fromtimestamp(candle[6] / 1000).strftime("%Y-%m-%d %H:%M:%S"),
+                        }
+                        all_data.append(candle_data)
+                    
+                    # Check if we got all data
+                    if len(data) < 1000:
+                        break
+                    
+                    # Update start time for next batch
+                    params["startTime"] = data[-1][0] + 1
+                    
+                    print(f"{GREEN}Fetched {len(all_data)} candles...{RESET}")
+            
+            else:
+                # Stock/Commodity export using Yahoo Finance
+                import yfinance as yf
+                
+                # Map timeframe to yfinance interval
+                interval_map = {
+                    '1d': '1d',
+                    '1wk': '1wk',
+                    '1mo': '1mo'
+                }
+                
+                interval = interval_map[timeframe]
+                
+                # Fetch data
+                ticker = yf.Ticker(symbol)
+                df = ticker.history(start=start_date, end=end_date, interval=interval)
+                
+                if df.empty:
+                    print(f"{RED}✗ No data found for {symbol}{RESET}")
+                    continue
+                
+                # Convert to list of dicts
+                for index, row in df.iterrows():
+                    candle_data = {
+                        "timestamp": index.strftime("%Y-%m-%d %H:%M:%S"),
+                        "open": float(row['Open']),
+                        "high": float(row['High']),
+                        "low": float(row['Low']),
+                        "close": float(row['Close']),
+                        "volume": float(row['Volume']),
+                        "close_time": index.strftime("%Y-%m-%d %H:%M:%S"),
+                    }
+                    all_data.append(candle_data)
+                
+                print(f"{GREEN}Fetched {len(all_data)} candles...{RESET}")
+            
+            if not all_data:
+                print(f"{RED}✗ No data found{RESET}")
+                continue
+            
+            print(f"{GREEN}✓ Total: {len(all_data)} candles fetched{RESET}\n")
+            
+            # Create exports directory
+            os.makedirs("exports", exist_ok=True)
+            
+            # Generate filename
+            filename = f"{symbol}_{timeframe}_{start_date}_to_{end_date}.csv"
+            filepath = os.path.join("exports", filename)
+            
+            # Export to CSV
+            with open(filepath, 'w', newline='') as csvfile:
+                fieldnames = ['timestamp', 'open', 'high', 'low', 'close', 'volume', 'close_time']
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                
+                writer.writeheader()
+                writer.writerows(all_data)
+            
+            print(f"{GREEN}✓ Data exported successfully!{RESET}")
+            print(f"{CYAN}File:{RESET} {filepath}")
+            print(f"{CYAN}Rows:{RESET} {len(all_data)}")
+            print(f"{CYAN}Symbol:{RESET} {symbol}")
+            print(f"{CYAN}Timeframe:{RESET} {timeframe}\n")
+            
+        except requests.exceptions.RequestException as e:
+            print(f"{RED}✗ Error fetching data: {str(e)}{RESET}")
+            continue
+        except Exception as e:
+            print(f"{RED}✗ Unexpected error: {str(e)}{RESET}")
+            continue
+        
+        # Ask if user wants to export more
+        print(f"{CYAN}{'─' * 70}{RESET}")
+        export_more = input(f"\n{CYAN}Export more data? (y/n):{RESET} ").strip().lower()
+        if export_more != 'y':
+            return
+
+
 def interactive_mode():
-    """Interactive mode - guides user through price lookup"""
+    """Interactive mode - guides user through price lookup or data export"""
     print_banner()
     print_description()
     
     while True:
+        # Ask what user wants to do
+        print(f"\n{CYAN}{'─' * 70}{RESET}")
+        print(f"{BOLD}{BRIGHT_PURPLE}What would you like to do?{RESET}\n")
+        print(f"  {GREEN}[1]{RESET} Check Prices     - Look up historical prices")
+        print(f"  {GREEN}[2]{RESET} Export Data      - Download bulk data to CSV")
+        print(f"  {YELLOW}[Q]{RESET} Quit\n")
+        
+        main_choice = input(f"{CYAN}Enter your choice (1/2/Q):{RESET} ").strip().upper()
+        
+        if main_choice == 'Q':
+            print(f"\n{PURPLE}Thanks for using StockScan! Goodbye! 👋{RESET}\n")
+            break
+        
+        if main_choice not in ['1', '2']:
+            print(f"\n{RED}⚠ Invalid choice! Please enter 1 for Check Prices, 2 for Export Data, or Q to quit.{RESET}")
+            continue
+        
+        # If user chose Export Data
+        if main_choice == '2':
+            export_data_mode()
+            continue
+        
+        # Otherwise continue with normal price checking flow
         # Ask which market
         print(f"\n{CYAN}{'─' * 70}{RESET}")
         print(f"{BOLD}{BRIGHT_PURPLE}Which market do you want to check?{RESET}\n")
         print(f"  {GREEN}[1]{RESET} Stocks       (AAPL, TSLA, INFY.NS, HDFCBANK.BO, etc.)")
         print(f"  {GREEN}[2]{RESET} Crypto       (BTCUSDT, ETHUSDT, etc.)")
         print(f"  {GREEN}[3]{RESET} Commodities  (GLD, USO, CORN, etc.)")
-        print(f"  {YELLOW}[Q]{RESET} Quit\n")
+        print(f"  {YELLOW}[B]{RESET} Back to main menu\n")
         
-        choice = input(f"{CYAN}Enter your choice (1/2/3/Q):{RESET} ").strip().upper()
+        choice = input(f"{CYAN}Enter your choice (1/2/3/B):{RESET} ").strip().upper()
         
-        if choice == 'Q':
-            print(f"\n{PURPLE}Thanks for using StockScan! Goodbye! 👋{RESET}\n")
-            break
+        if choice == 'B':
+            continue  # Go back to main menu
         
         if choice not in ['1', '2', '3']:
-            print(f"\n{RED}⚠ Invalid choice! Please enter 1 for Stocks, 2 for Crypto, 3 for Commodities, or Q to quit.{RESET}")
+            print(f"\n{RED}⚠ Invalid choice! Please enter 1 for Stocks, 2 for Crypto, 3 for Commodities, or B to go back.{RESET}")
             continue
         
         # Show syntax based on choice
