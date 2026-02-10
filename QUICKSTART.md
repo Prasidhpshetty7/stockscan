@@ -437,6 +437,35 @@ A: StockScan doesn't cover:
 
 ---
 
+## 📊 Bonus: Export Data for Backtesting
+
+Want to export bulk historical data to CSV files? Use the **Data Exporter Tool**!
+
+```bash
+cd stockscan
+python stockscan_exporter.py
+```
+
+**What it does:**
+- Export thousands of candles at once
+- Save to CSV files for analysis
+- Perfect for backtesting strategies
+- Works with Python, Excel, R, etc.
+
+**Example:**
+```
+Enter symbol: BTCUSDT
+Enter start date: 2024-01-01
+Enter end date: 2024-12-31
+Select timeframe: 6 (daily)
+
+✓ Data exported to: exports/BTCUSDT_1d_2024-01-01_to_2024-12-31.csv
+```
+
+See the **Data Exporter section in README.md** for full details, use cases, and code examples!
+
+---
+
 ## Need Help?
 
 Run this command (from inside the stockscan folder):

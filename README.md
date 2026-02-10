@@ -20,6 +20,8 @@ Plus, it now lets you **compare with current prices** and see your potential pro
 - 📈 **Price Comparison**: See P&L, percentage change, and profit/loss between historical and current prices
 - 🎨 **Beautiful Output**: Clean, colorful terminal display
 
+**NEW:** 📊 **[Data Exporter Tool](EXPORTER_README.md)** - Export bulk historical data to CSV for backtesting!
+
 ---
 
 ## ⚡ Quick Start (3 Steps)
@@ -478,6 +480,198 @@ Please verify the symbol is correct and the company has sufficient trading histo
 
 ---
 
+## � Bonus: Data Exporter Tool
+
+## 📊 Data Exporter Tool - CSV Export & Backtesting
+
+StockScan includes a **separate companion tool** for exporting bulk historical data to CSV files!
+
+### 🎯 What Does It Do?
+
+The Data Exporter lets you:
+- Export thousands of candles at once (not just single prices)
+- Download data for any date range
+- Save to CSV files for analysis
+- Perfect for backtesting trading strategies
+- Works with Python, Excel, R, or any analysis tool
+
+### ⚡ Quick Start
+
+```bash
+cd stockscan
+python stockscan_exporter.py
+```
+
+Then follow the prompts:
+```
+Enter symbol (e.g., BTCUSDT): BTCUSDT
+Enter start date (YYYY-MM-DD): 2024-01-01
+Enter end date (YYYY-MM-DD): 2024-12-31
+Select timeframe (1-7): 6
+
+Fetching data for BTCUSDT from 2024-01-01 to 2024-12-31...
+Fetched 365 candles...
+✓ Total: 365 candles fetched
+
+✓ Data exported successfully!
+File: exports/BTCUSDT_1d_2024-01-01_to_2024-12-31.csv
+Rows: 365
+```
+
+### 📁 CSV File Format
+
+The exported CSV contains:
+
+| Column | Description |
+|--------|-------------|
+| `timestamp` | Candle open time (YYYY-MM-DD HH:MM:SS) |
+| `open` | Opening price |
+| `high` | Highest price |
+| `low` | Lowest price |
+| `close` | Closing price |
+| `volume` | Trading volume |
+| `close_time` | Candle close time |
+
+**Example CSV:**
+```csv
+timestamp,open,high,low,close,volume,close_time
+2024-01-01 00:00:00,42150.50,42500.00,42000.00,42300.75,1250.45,2024-01-01 23:59:59
+2024-01-02 00:00:00,42300.75,42800.00,42200.00,42650.25,1380.20,2024-01-02 23:59:59
+```
+
+### 🔧 Supported Timeframes
+
+| Timeframe | Description | Best For |
+|-----------|-------------|----------|
+| `1m` | 1 minute | High-frequency trading, scalping |
+| `5m` | 5 minutes | Day trading, short-term analysis |
+| `15m` | 15 minutes | Intraday trading |
+| `1h` | 1 hour | Swing trading, medium-term |
+| `4h` | 4 hours | Position trading |
+| `1d` | Daily | Long-term analysis, backtesting |
+| `1w` | Weekly | Long-term strategies |
+
+### 💡 Use Cases
+
+**1. Backtesting Trading Strategies**
+```python
+import pandas as pd
+
+# Load exported data
+df = pd.read_csv('exports/BTCUSDT_1d_2024-01-01_to_2024-12-31.csv')
+
+# Calculate moving averages
+df['SMA_50'] = df['close'].rolling(50).mean()
+df['SMA_200'] = df['close'].rolling(200).mean()
+
+# Generate signals
+df['signal'] = 0
+df.loc[df['SMA_50'] > df['SMA_200'], 'signal'] = 1  # Buy
+df.loc[df['SMA_50'] < df['SMA_200'], 'signal'] = -1  # Sell
+
+# Calculate returns
+df['returns'] = df['close'].pct_change()
+df['strategy_returns'] = df['signal'].shift(1) * df['returns']
+
+# Results
+total_return = (1 + df['strategy_returns']).prod() - 1
+print(f"Strategy Return: {total_return * 100:.2f}%")
+```
+
+**2. Machine Learning Training Data**
+```python
+import pandas as pd
+
+# Load data
+df = pd.read_csv('exports/BTCUSDT_1h_2024-01-01_to_2024-12-31.csv')
+
+# Feature engineering
+df['returns'] = df['close'].pct_change()
+df['sma_20'] = df['close'].rolling(20).mean()
+df['volatility'] = df['returns'].rolling(20).std()
+
+# Train your model
+# X = df[['sma_20', 'volatility', ...]]
+# y = df['returns'].shift(-1)
+```
+
+**3. Technical Analysis**
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load data
+df = pd.read_csv('exports/BTCUSDT_1d_2024-01-01_to_2024-12-31.csv')
+
+# Plot price chart
+plt.figure(figsize=(12, 6))
+plt.plot(df['timestamp'], df['close'])
+plt.title('BTC Price 2024')
+plt.xlabel('Date')
+plt.ylabel('Price (USD)')
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+```
+
+### 🎓 How It Works
+
+**Step-by-Step Process:**
+
+1. **User Input** - You provide symbol, date range, timeframe
+2. **Data Fetching** - Tool connects to Binance API and fetches data in batches
+3. **Progress Display** - Shows "Fetched 1000 candles..." as it works
+4. **Data Processing** - Converts timestamps and organizes data
+5. **CSV Export** - Saves to `exports/` folder with clear filename
+6. **Result** - You get a clean CSV file ready for analysis
+
+**Features:**
+- ✅ Automatic pagination for large date ranges
+- ✅ Progress display during fetch
+- ✅ Clean CSV format ready for any tool
+- ✅ No API keys needed (uses free Binance API)
+- ✅ Organized output in `exports/` folder
+
+### 📈 Why Is This Useful?
+
+**For Traders:**
+- Backtest strategies before risking real money
+- Analyze historical patterns to find profitable setups
+- Compare different timeframes
+- Test indicators (RSI, MACD, Bollinger Bands, etc.)
+
+**For Developers:**
+- Train ML models for price prediction
+- Build trading bots with historical data
+- Create custom indicators
+- Develop portfolio optimization algorithms
+
+**For Analysts:**
+- Research market behavior across periods
+- Study volatility patterns
+- Generate reports with historical data
+- Create visualizations and charts
+
+### ⚠️ Important Notes
+
+- Binance API returns max 1000 candles per request
+- Tool automatically handles pagination for larger ranges
+- Very large date ranges may take a few minutes
+- Data comes directly from Binance (same as professional traders use)
+
+### 🔄 Difference from Main StockScan
+
+| Feature | StockScan (Main) | Data Exporter |
+|---------|------------------|---------------|
+| Purpose | Check single price at specific time | Export bulk data for analysis |
+| Output | Terminal display | CSV files |
+| Use Case | Quick price lookups | Backtesting, ML, analysis |
+| Data Amount | Single candle | Thousands of candles |
+
+**Both tools are completely independent!**
+
+---
+
 ## 📚 Documentation
 
 - **[QUICKSTART.md](QUICKSTART.md)** - Step-by-step guide for beginners
@@ -863,6 +1057,22 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **For full license details, see the [LICENSE](LICENSE) file.**
+
+---
+
+## 📁 Project Structure
+
+```
+stockscan/
+├── stockscan.py              # Main price lookup tool
+├── stockscan_exporter.py     # CSV export & backtesting tool
+├── README.md                 # Main documentation
+├── QUICKSTART.md             # Beginner's guide
+├── WHAT_HAPPENS.md           # Visual walkthrough
+├── EXPORTER_README.md        # Data exporter guide
+├── LICENSE                   # MIT License
+└── exports/                  # CSV files (created when you export)
+```
 
 ---
 

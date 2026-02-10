@@ -843,6 +843,76 @@ Please verify the symbol is correct and the company has sufficient trading histo
 
 ---
 
+## 📊 Bonus Feature: Data Exporter
+
+StockScan also includes a **separate tool** for exporting bulk data to CSV!
+
+### What is it?
+
+The Data Exporter lets you download thousands of candles at once and save them to CSV files. Perfect for:
+- Backtesting trading strategies
+- Machine learning training data
+- Technical analysis
+- Portfolio optimization
+
+### How to use it?
+
+**Step 1: Run the exporter**
+```bash
+cd stockscan
+python stockscan_exporter.py
+```
+
+**Step 2: Follow the prompts**
+```
+Enter symbol (e.g., BTCUSDT): BTCUSDT
+Enter start date (YYYY-MM-DD): 2024-01-01
+Enter end date (YYYY-MM-DD): 2024-12-31
+Select timeframe (1-7): 6
+```
+
+**Step 3: Get your CSV file**
+```
+Fetching data for BTCUSDT from 2024-01-01 to 2024-12-31...
+Fetched 1000 candles...
+✓ Total: 365 candles fetched
+
+✓ Data exported successfully!
+File: exports/BTCUSDT_1d_2024-01-01_to_2024-12-31.csv
+Rows: 365
+```
+
+### CSV Format
+
+The exported file contains:
+```csv
+timestamp,open,high,low,close,volume,close_time
+2024-01-01 00:00:00,42150.50,42500.00,42000.00,42300.75,1250.45,2024-01-01 23:59:59
+2024-01-02 00:00:00,42300.75,42800.00,42200.00,42650.25,1380.20,2024-01-02 23:59:59
+```
+
+### Use Cases
+
+**Backtesting:**
+```python
+import pandas as pd
+
+df = pd.read_csv('exports/BTCUSDT_1d_2024-01-01_to_2024-12-31.csv')
+# Test your trading strategy here
+```
+
+**Machine Learning:**
+```python
+import pandas as pd
+
+df = pd.read_csv('exports/BTCUSDT_1h_2024-01-01_to_2024-12-31.csv')
+# Train your price prediction model
+```
+
+**Full documentation:** See the **Data Exporter section in README.md** for complete guide, use cases, and examples!
+
+---
+
 ## Summary
 
 **That's literally it!**
