@@ -324,8 +324,7 @@ Note: This uses OHLCV candle logic. The CLOSE price of the candle
 - **Perfect Timing**: 14:39 with 1h timeframe = exactly 14:39:00 to 15:39:00
 - **Midnight Crossing**: If the period crosses midnight, it shows the time split across dates
 - **Example**: 23:59 with 3m = "1 minute(s) from 2026-01-02, 2 minute(s) from 2026-01-03"
-- **Non-Trading Days**: Weekends and holidays are excluded from the data
-- **Example**: A week starting Monday with a holiday shows "4 trading days out of 7"
+- **Example**: A week starting Monday with a holiday shows "7 trading days out of 7" since crypto runs 24*7
 
 **Example**: If a stock opened at $100 and closed at $105:
 - Change: +$5.00 (gained $5)
